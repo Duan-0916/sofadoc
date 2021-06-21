@@ -58,7 +58,6 @@ public class YuqueTocService {
         map.put("action", "removeWithChildren");
         map.put("node_uuid", nodeUuid);
         client.put(url, null, JSON.toJSONString(map));
-        return;
     }
 
     /**

@@ -105,7 +105,7 @@ public class AciController {
                     /* 回调REST接口 */
                     HttpResult httpResult = new RetryRestClient().post(submitResultUrl, postEntity,
                             componentRequest.getSubmitResultHeaders(), true);
-                    LOGGER.info("start sync send status:" + httpResult.getStatus());
+                    LOGGER.info("start sync send status: {}", httpResult.getStatus());
                 } catch (Exception e) {
                     LOGGER.error("send post msg fail:" + e.getMessage(), e);
                 } finally {
