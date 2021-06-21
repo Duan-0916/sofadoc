@@ -66,8 +66,6 @@ public class AciController {
     @ResponseBody
     public APIStringResult doRestSampleSync(HttpServletRequest request,
                                             @RequestBody AntCIComponentRestRequest componentRequest) {
-        LOGGER.info("Receive aci request " + request.getRequestURI());
-
         ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
         String body = new String(requestWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
         StringBuilder heads = new StringBuilder();
@@ -75,8 +73,7 @@ public class AciController {
         while (headNames.hasMoreElements()) {
             heads.append(headNames.nextElement()).append(",");
         }
-        LOGGER.info("head: " + heads.substring(0, heads.length() - 1));
-        LOGGER.info("body: " + body);
+        LOGGER.info("Receive aci request, heads: {} \n body: {}", heads.substring(0, heads.length() - 1), body);
 
         // 这个只是开启一个线程,可以直接new Thread() 的方式去整。
         EXECUTOR.execute(new TracerRunnable() {
@@ -104,11 +101,11 @@ public class AciController {
                     String postData = JsonUtil.toJson(restResponseV2);
                     final StringEntity postEntity = RestClient.getStringEntity(postData);
                     final String submitResultUrl = componentRequest.getSubmitResultUrl();
-                    LOGGER.info("start sync send request:" + JSON.toJSONString(submitResultUrl));
-                    LOGGER.info("start sync send request:" + JSON.toJSONString(postData));
+                    LOGGER.info("start sync send request: {}, {}",  JSON.toJSONString(submitResultUrl), JSON.toJSONString(postData));
                     /* 回调REST接口 */
                     HttpResult httpResult = new RetryRestClient().post(submitResultUrl, postEntity,
                             componentRequest.getSubmitResultHeaders(), true);
+                    LOGGER.info("start sync send status:" + httpResult.getStatus());
                 } catch (Exception e) {
                     LOGGER.error("send post msg fail:" + e.getMessage(), e);
                 } finally {

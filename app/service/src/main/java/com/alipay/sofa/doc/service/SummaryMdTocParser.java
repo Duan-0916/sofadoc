@@ -27,8 +27,7 @@ public class SummaryMdTocParser implements TOCParser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        TOC toc = parseSummaryLines(repo.getNamespace(), lines);
-        return toc;
+        return parseSummaryLines(repo.getNamespace(), lines);
     }
 
     protected TOC parseSummaryLines(String namespace, List<String> lines) {

@@ -105,7 +105,7 @@ public class YuqueDocService {
 
         // 然后遍历子目录
         List<MenuItem> subs = menuItem.getSubMenuItems();
-        if (subs.size() > 0) {
+        if (!subs.isEmpty()) {
             for (int i = 0; i < subs.size(); i++) {
                 //for (int i = subs.size() - 1; i >= 0; i--) {
                 MenuItem subMenuItem = subs.get(i);
@@ -223,7 +223,7 @@ public class YuqueDocService {
         try {
             List<String> lines = FileUtils.readLines(file);
             boolean removeTitle = false;
-            StringBuilder content = new StringBuilder()
+            StringBuilder content = new StringBuilder(128)
                     .append("[编辑本文档](" + repo.getGitPath() + "/edit/master/" + filePath + ")    ")
                     .append("[共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)")
                     .append("\n\n");

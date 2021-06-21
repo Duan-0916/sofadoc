@@ -112,7 +112,7 @@ public class YuqueTocService {
         // 然后遍历子目录
         List<MenuItem> subs = menuItem.getSubMenuItems();
         String lastSubUuid = null;
-        if (subs.size() > 0) {
+        if (!subs.isEmpty()) {
             for (int i = 0; i < subs.size(); i++) {
                 //for (int i = subs.size() - 1; i >= 0; i--) {
                 MenuItem subMenuItem = subs.get(i);
