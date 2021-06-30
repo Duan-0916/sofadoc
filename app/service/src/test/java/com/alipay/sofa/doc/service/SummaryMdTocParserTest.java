@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class SummaryMdTocParserTest {
 
-    private SummaryMdTocParser parser = new SummaryMdTocParser();
+    private final SummaryMdTOCParser parser = new SummaryMdTOCParser();
 
     @Test
     public void testparse() throws IOException {
@@ -47,7 +47,7 @@ public class SummaryMdTocParserTest {
         lines.add("  *[11](xxx.md)");
         lines.add("*[2](xxx.md)");
 
-        TOC toc = parser.parseSummaryLines("xxx", lines);
+        TOC toc = parser.parseSummaryLines(lines);
         Assert.assertEquals(3, toc.getSubMenuItems().size());
         Assert.assertEquals(1, toc.getSubMenuItems().get(0).
                 getSubMenuItems().size());
@@ -63,7 +63,7 @@ public class SummaryMdTocParserTest {
         lines.add("*[0](xxx.md)");
         lines.add(" *[00](xxx.md)");
 
-        TOC toc = parser.parseSummaryLines("xxx", lines);
+        TOC toc = parser.parseSummaryLines(lines);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -73,7 +73,7 @@ public class SummaryMdTocParserTest {
         lines.add("  *[00](xxx.md)");
         lines.add("      *[000](xxx.md)");
 
-        TOC toc = parser.parseSummaryLines("xxx", lines);
+        TOC toc = parser.parseSummaryLines(lines);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -84,6 +84,6 @@ public class SummaryMdTocParserTest {
         lines.add("      *[00](xxx.md)");
         lines.add("*[1](xxx.md)");
 
-        TOC toc = parser.parseSummaryLines("xxx", lines);
+        TOC toc = parser.parseSummaryLines(lines);
     }
 }

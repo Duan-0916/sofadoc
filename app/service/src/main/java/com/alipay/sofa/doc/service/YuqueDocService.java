@@ -58,33 +58,32 @@ public class YuqueDocService {
         Assert.notNull(toc, "toc is null");
         String namespace = repo.getNamespace();
         Assert.notNull(namespace, "namespace is null");
-        if (!"DOC".equals(menuItem.getType())) {
-            LOGGER.info(" type is not DOC, continue.");
-            return;
-        }
-
-        String newContent = getContent(repo, menuItem.getUrl(), menuItem.getTitle());
-
         String url = menuItem.getUrl();
-        // 拼接，放回
-        String slug = getSlug(url);
+        if (MenuItem.MenuItemType.TITLE.equals(menuItem.getType())) {
+            LOGGER.info("  type is TITLE, continue.");
+        } else if (MenuItem.MenuItemType.LINK.equals(menuItem.getType())) {
+            LOGGER.info("  type is LINK, continue.");
+            menuItem.setSlug(url);
+        } else {
+            // 拼接，放回
+            String slug = getSlug(url);
+            menuItem.setSlug(slug);
 
-        Doc doc = query(client, namespace, slug);
-        if (doc == null) { // 新增
-            doc = new Doc();
-            doc.setTitle(menuItem.getTitle());
-            doc.setFormat("markdown");
-            doc.setBody(newContent);
-            doc.setSlug(slug);
-            insert(client, namespace, doc);
-        } else { // 更新
-            doc.setFormat("markdown");
-            doc.setBody(newContent);
-            update(client, namespace, doc);
+            String newContent = getContent(repo, menuItem.getUrl(), menuItem.getTitle());
+            Doc doc = query(client, namespace, slug);
+            if (doc == null) { // 新增
+                doc = new Doc();
+                doc.setTitle(menuItem.getTitle());
+                doc.setFormat("markdown");
+                doc.setBody(newContent);
+                doc.setSlug(slug);
+                insert(client, namespace, doc);
+            } else { // 更新
+                doc.setFormat("markdown");
+                doc.setBody(newContent);
+                update(client, namespace, doc);
+            }
         }
-
-        // 重要：设置回菜单列表
-        menuItem.setUrl(slug);
     }
 
     /**

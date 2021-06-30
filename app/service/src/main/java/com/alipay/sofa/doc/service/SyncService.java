@@ -4,6 +4,7 @@ import com.alipay.aclinkelib.common.service.facade.model.v2.AntCIComponentRestRe
 import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.model.SyncResult;
 import com.alipay.sofa.doc.model.TOC;
+import com.alipay.sofa.doc.utils.FileUtils;
 import com.alipay.sofa.doc.utils.StringUtils;
 import com.alipay.sofa.doc.utils.YuqueClient;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import java.util.Locale;
 
 /**
  * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
@@ -24,9 +27,9 @@ public class SyncService {
     @Autowired
     GitService gitService;
     @Autowired
-    SummaryMdTocParser summaryMdTocParser;
+    SummaryMdTOCParser summaryMdTocParser;
     @Autowired
-    TocChecker tocChecker;
+    TOCChecker tocChecker;
     @Autowired
     YuqueDocService yuqueDocService;
     @Autowired
@@ -36,6 +39,9 @@ public class SyncService {
 
     @Value("${sofa.doc.yuque.token}")
     String defaultYuqueToken;
+
+    @Value("${sofa.doc.git.doc.root}")
+    String defaultGitDocRoot;
 
     /**
      * @param request 同步请求
@@ -49,8 +55,21 @@ public class SyncService {
             if (StringUtils.isBlank(yuqueToken)) {
                 yuqueToken = defaultYuqueToken;
             }
+            String gitDocRoot = request.getInputs().get("gitDocRoot"); // git
+            if (StringUtils.isBlank(gitDocRoot)) {
+                gitDocRoot = defaultGitDocRoot;
+            }
             String yuqueNamespace = request.getInputs().get("yuqueNamespace");
+            YuqueTocService.SyncMode syncTocMode;
+            String syncTocStr = request.getInputs().get("syncTocMode");
+            if (!StringUtils.isBlank(syncTocStr)) {
+                syncTocMode = YuqueTocService.SyncMode.valueOf(syncTocStr.toUpperCase(Locale.ROOT));
+            } else {
+                syncTocMode = YuqueTocService.SyncMode.OVERRIDE;
+            }
+
             Assert.notNull(gitRepo, "gitRepo 不能为空");
+            Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
             Assert.notNull(yuqueToken, "yuqueToken 不能为空，请联系组件管理员或者在「.aci.yml」里设置");
             Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
 
@@ -78,7 +97,8 @@ public class SyncService {
             }
 
             Repo repo = new Repo().setNamespace(yuqueNamespace)
-                    .setLocalPath(localPath).setGitPath(gitPath)
+                    .setLocalPath(FileUtils.contactPath(localPath, gitDocRoot))
+                    .setGitPath(gitPath)
                     .setTocType("markdown");
 
             // 1. 解析本地目录
@@ -90,16 +110,16 @@ public class SyncService {
             // 3. 根据目录进行文章同步
             yuqueDocService.syncDocs(client, repo, toc);
 
-            // 4. 清空文章
-            yuqueTocService.syncToc(client, repo, toc);
+            // 4. 同步目录
+            yuqueTocService.syncToc(client, repo, toc, syncTocMode);
 
-            String url = yuqueSite + yuqueNamespace;
+            String url = FileUtils.contactPath(yuqueSite, yuqueNamespace);
 
             result = new SyncResult(true, "同步成功！ 请访问 <a href=\""
                     + url + "\" target=\"_blank\" >" + url + "</a> 查看最新文档！");
         } catch (Exception e) {
             result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看后台日志");
-            LOGGER.error("同步异常", e);
+            LOGGER.error("同步异常：" + e.getMessage(), e);
         }
         return result;
     }

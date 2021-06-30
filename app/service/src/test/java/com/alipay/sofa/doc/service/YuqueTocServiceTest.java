@@ -4,7 +4,6 @@ import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.model.TOC;
 import com.alipay.sofa.doc.utils.YuqueClient;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +22,13 @@ public class YuqueTocServiceTest {
         client = new YuqueClient(baseUrl, XAuthToken);
     }
 
-    @Test
+    //@Test
     public void removeToc() {
         YuqueTocService service = new YuqueTocService();
         service.removeAll(client,"zhanggeng.zg/whyya9");
     }
 
-    @Test
+    //@Test
     public void syncToc() {
         YuqueTocService service = new YuqueTocService();
 
@@ -46,9 +45,9 @@ public class YuqueTocServiceTest {
         lines.add("  * [11](xxx.md)");
         lines.add("* [2](xxx.md)");
 
-        TOC toc = new SummaryMdTocParser().parseSummaryLines("xxx", lines);
+        TOC toc = new SummaryMdTOCParser().parseSummaryLines(lines);
         Repo repo = new Repo().setNamespace("zhanggeng.zg/whyya9");
-        service.syncToc(client, repo, toc);
+        service.syncToc(client, repo, toc, YuqueTocService.SyncMode.OVERRIDE);
     }
 
 }

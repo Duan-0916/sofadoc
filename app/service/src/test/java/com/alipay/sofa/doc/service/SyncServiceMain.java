@@ -30,9 +30,9 @@ public class SyncServiceMain {
 
         AntCIComponentRestRequest request = JSONObject.parseObject(text,  AntCIComponentRestRequest.class);
         SyncService syncService = new SyncService();
-        syncService.tocChecker = new TocChecker();
+        syncService.tocChecker = new TOCChecker();
         syncService.gitService = new GitService();
-        syncService.summaryMdTocParser = new SummaryMdTocParser();
+        syncService.summaryMdTocParser = new SummaryMdTOCParser();
         syncService.yuqueDocService = new YuqueDocService();
         syncService.yuqueTocService = new YuqueTocService();
         syncService.doSync(request);

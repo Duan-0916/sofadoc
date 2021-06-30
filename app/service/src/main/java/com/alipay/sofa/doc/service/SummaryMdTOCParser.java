@@ -15,7 +15,7 @@ import java.util.List;
  *
  */
 @Component
-public class SummaryMdTocParser implements TOCParser {
+public class SummaryMdTOCParser implements TOCParser {
 
     public static final String TOC_MD = "SUMMARY.md";
 
@@ -27,10 +27,10 @@ public class SummaryMdTocParser implements TOCParser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return parseSummaryLines(repo.getNamespace(), lines);
+        return parseSummaryLines(lines);
     }
 
-    protected TOC parseSummaryLines(String namespace, List<String> lines) {
+    protected TOC parseSummaryLines(List<String> lines) {
         TOC toc = new TOC();
         int ltag = -1;
         MenuItem lastParentMenuItem = toc;
@@ -53,6 +53,7 @@ public class SummaryMdTocParser implements TOCParser {
      * @param ltag               上次记录的空格数
      * @param lastParentMenuItem 如果是平级的，放到这里
      * @param lastMenuItem       如果是子级的，放到这个下面
+     * @return MenuItem  目录节点
      */
     private MenuItem line2MenuItem(int lineNum, String line, int ltag, MenuItem lastParentMenuItem, MenuItem lastMenuItem) {
         String data = StringUtils.trimLeft(line);
@@ -109,11 +110,11 @@ public class SummaryMdTocParser implements TOCParser {
         String url = p2.substring(0, idx);
         item.setUrl(url);
         if (StringUtils.isBlank(url)) {
-            item.setType("TITLE");
+            item.setType(MenuItem.MenuItemType.TITLE);
         } else if (url.endsWith(".md") || url.endsWith(".markdown")) {
-            item.setType("DOC");
+            item.setType(MenuItem.MenuItemType.DOC);
         } else {
-            item.setType("LINK");
+            item.setType(MenuItem.MenuItemType.LINK);
         }
         return item;
     }

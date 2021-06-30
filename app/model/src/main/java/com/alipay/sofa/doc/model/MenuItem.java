@@ -4,25 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuItem {
-    /*
-    TITLE 分组
-    DOC 本知识库文档
-    LINK 链接
-     */
-    private String type;
+    private MenuItemType type = MenuItemType.OHTER;
     private String title;
     private String url;
-    private String uuid;
-    private String slug;
     private List<MenuItem> subMenuItems = new ArrayList<>();
     private MenuItem parentMenuItem;
+    /**
+     * 语雀的 uuid，运行时设置
+     */
+    private transient String uuid;
+    /**
+     * 语雀的 slug，运行时设置
+     */
+    private transient String slug;
     private transient int ltrim = 0;
 
-    public String getType() {
+    public MenuItemType getType() {
         return type;
     }
 
-    public MenuItem setType(String type) {
+    public MenuItem setType(MenuItemType type) {
         this.type = type;
         return this;
     }
@@ -97,5 +98,24 @@ public class MenuItem {
                 ", subMenuItems=" + subMenuItems +
                 ", ltrim=" + ltrim +
                 '}';
+    }
+
+    public enum MenuItemType {
+        /**
+         * 本知识库文档
+         */
+        DOC,
+        /**
+         * 分组
+         */
+        TITLE,
+        /**
+         * 链接
+         */
+        LINK,
+        /**
+         * 其它
+         */
+        OHTER
     }
 }
