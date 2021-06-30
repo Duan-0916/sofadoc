@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.alipay.sofa</groupId>
         <artifactId>sofaboot-alipay-dependencies</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.0-SNAPSHOT</version>
     </parent>
     <groupId>com.alipay.sofa</groupId>
     <artifactId>sofa-doc-parent</artifactId>
@@ -31,7 +31,6 @@
         <jgit.version>5.1.16.202106041830-r</jgit.version>
         <jsch.version>0.1.54</jsch.version>
         <aclinkelib.version>1.2.5.20210507</aclinkelib.version>
-        <buservice.version>1.0.0.20210630</buservice.version>
     </properties>
 
     <dependencyManagement>
@@ -91,12 +90,6 @@
                 <groupId>com.alipay.linkede</groupId>
                 <artifactId>aclinkelib-common-util</artifactId>
                 <version>${aclinkelib.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alipay.fc.buservice</groupId>
-                <artifactId>buservice-sdk</artifactId>
-                <version>${buservice.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
