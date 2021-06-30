@@ -39,6 +39,11 @@
 			<artifactId>fastjson</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.alipay.fc.buservice</groupId>
+			<artifactId>buservice-sdk</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>
