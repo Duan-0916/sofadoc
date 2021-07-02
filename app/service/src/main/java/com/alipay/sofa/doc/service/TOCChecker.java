@@ -10,7 +10,9 @@ import org.springframework.util.Assert;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
@@ -32,8 +34,9 @@ public class TOCChecker {
     public void check(Repo repo, TOC toc) {
         List<MenuItem> subs = toc.getSubMenuItems();
         List<String> errors = new ArrayList<>();
+        Set<String> slugs = new HashSet<>();
         for (MenuItem item : subs) {
-            checkMenuItemWithChild(errors, repo, toc, item);
+            checkMenuItemWithChild(errors, repo, toc, item, slugs);
         }
         if (errors.size() > 0) {
             StringBuilder sb = new StringBuilder();
@@ -47,22 +50,22 @@ public class TOCChecker {
 
     /**
      * 插入一个节点及其所有子节点
-     *
-     * @param repo     文档仓库
+     *  @param repo     文档仓库
      * @param toc      目录
      * @param menuItem 要添加的目标节点
+     * @param slugs 已存在的文章列表
      */
-    public void checkMenuItemWithChild(List<String> errors, Repo repo, TOC toc, MenuItem menuItem) {
+    protected void checkMenuItemWithChild(List<String> errors, Repo repo, TOC toc, MenuItem menuItem, Set<String> slugs) {
         Assert.notNull(repo, "repo is null");
         Assert.notNull(toc, "toc is null");
         Assert.notNull(repo.getNamespace(), "namespace is null");
         // 检查自己
-        checkMenuItem(errors, repo, toc, menuItem);
+        checkMenuItem(errors, repo, toc, menuItem, slugs);
         // 然后遍历子目录
         List<MenuItem> subs = menuItem.getSubMenuItems();
         if (!subs.isEmpty()) {
             for (MenuItem subMenuItem : subs) {
-                checkMenuItemWithChild(errors, repo, toc, subMenuItem);
+                checkMenuItemWithChild(errors, repo, toc, subMenuItem, slugs);
             }
         }
     }
@@ -73,7 +76,7 @@ public class TOCChecker {
      * @param toc      目标对象
      * @param menuItem 目录节点
      */
-    public void checkMenuItem(List<String> errors, Repo repo, TOC toc, MenuItem menuItem) {
+    protected void checkMenuItem(List<String> errors, Repo repo, TOC toc, MenuItem menuItem, Set<String> slugs) {
         Assert.notNull(repo, "repo is null");
         Assert.notNull(toc, "toc is null");
         if (!MenuItem.MenuItemType.DOC.equals(menuItem.getType())) {
@@ -90,6 +93,13 @@ public class TOCChecker {
         if (!file.exists()) {
             errors.add("[" + url + "]" + file.getAbsolutePath() + " 不存在!");
         }
-        // TODO: 检查文件内容
+
+        String slug = menuItem.url2Slug(url);
+        if(slugs.contains(slug)){
+            errors.add("[" + url + "]" + "存在同名文件，请检查！");
+        } else {
+            slugs.add(slug);
+        }
+        // TODO: 检查其它文件内容
     }
 }
