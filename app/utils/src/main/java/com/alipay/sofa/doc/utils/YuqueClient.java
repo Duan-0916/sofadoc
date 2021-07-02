@@ -177,6 +177,7 @@ public class YuqueClient {
 
     /**
      * 获取response header中Content-Disposition中的filename值
+     *
      * @param response
      * @return
      */
@@ -188,29 +189,19 @@ public class YuqueClient {
             if (values.length == 1) {
                 NameValuePair param = values[0].getParameterByName("filename");
                 if (param != null) {
-                    try {
-                        //filename = new String(param.getValue().toString().getBytes(), "utf-8");
-                        //filename=URLDecoder.decode(param.getValue(),"utf-8");
-                        filename = param.getValue();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    filename = param.getValue();
                 }
             }
         }
         return filename;
     }
+
     /**
      * 获取随机文件名
+     *
      * @return
      */
     public static String getRandomFileName() {
         return String.valueOf(System.currentTimeMillis());
-    }
-    public static void outHeaders(HttpResponse response) {
-        Header[] headers = response.getAllHeaders();
-        for (int i = 0; i < headers.length; i++) {
-            System.out.println(headers[i]);
-        }
     }
 }

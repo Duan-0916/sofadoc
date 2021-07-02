@@ -207,7 +207,7 @@ public class YuqueDocService {
         try {
             List<String> lines = FileUtils.readLines(file);
             boolean removeTitle = false;
-            StringBuilder content = new StringBuilder(128)
+            StringBuilder content = new StringBuilder(512)
                     .append(":::info\n")
                     .append("[编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")    ")
                     .append("[共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)\n")
