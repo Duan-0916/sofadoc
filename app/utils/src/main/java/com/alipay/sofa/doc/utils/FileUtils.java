@@ -17,13 +17,16 @@
 package com.alipay.sofa.doc.utils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -110,29 +113,36 @@ public class FileUtils {
      *
      * @param file 文件
      * @return 文件内容（按行）
-     * @throws IOException 发送IO异常
+     * @throws IOException 读取IO异常
      */
     public static List<String> readLines(File file) throws IOException {
         List<String> lines = new ArrayList<String>();
-        InputStreamReader isr = null;
-        BufferedReader bufferedReader = null;
-        try {
-            isr = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
-            bufferedReader = new BufferedReader(isr);
+        try (InputStreamReader isr = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(isr)) {
             String lineText = null;
             while ((lineText = bufferedReader.readLine()) != null) {
                 lines.add(lineText);
             }
             return lines;
-        } finally {
-            if (bufferedReader != null) {
-                bufferedReader.close();
-            }
-            if (isr != null) {
-                isr.close();
+        }
+    }
+
+    /**
+     * 写内容到文件
+     *
+     * @param file 文件
+     * @throws IOException 写入IO异常
+     */
+    public static void writeLines(File file, List<String> lines) throws IOException {
+        try (OutputStreamWriter isr = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+             BufferedWriter bufferedWriter = new BufferedWriter(isr)) {
+            for (String line : lines) {
+                bufferedWriter.write(line);
+                bufferedWriter.newLine();
             }
         }
     }
+
 
     /**
      * 字符流写文件 较快

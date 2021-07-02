@@ -66,7 +66,7 @@ public class YuqueDocService {
             menuItem.setSlug(url);
         } else {
             // 拼接，放回
-            String slug = getSlug(url);
+            String slug = menuItem.url2Slug(url);
             menuItem.setSlug(slug);
 
             String newContent = getContent(repo, menuItem.getUrl(), menuItem.getTitle());
@@ -189,21 +189,6 @@ public class YuqueDocService {
         }
     }
 
-    protected String getSlug(String url) {
-        if (url.startsWith(".")) {
-            url = url.substring(1);
-        }
-        if (url.startsWith("/")) {
-            url = url.substring(1);
-        }
-        url = url.replace("/", "-");
-        url = url.toLowerCase();
-        if (url.endsWith(".md")) {
-            url = url.substring(0, url.length() - 3);
-        }
-        return url;
-    }
-
     protected Doc json2Doc(JSONObject data) {
         Doc doc = new Doc();
         doc.setId(data.getInteger("id"));
@@ -223,8 +208,10 @@ public class YuqueDocService {
             List<String> lines = FileUtils.readLines(file);
             boolean removeTitle = false;
             StringBuilder content = new StringBuilder(128)
+                    .append(":::info\n")
                     .append("[编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")    ")
-                    .append("[共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)")
+                    .append("[共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)\n")
+                    .append(":::\n")
                     .append("\n\n");
             for (String line : lines) {
                 if (!removeTitle) {

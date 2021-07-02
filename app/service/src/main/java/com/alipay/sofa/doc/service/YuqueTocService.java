@@ -247,6 +247,43 @@ public class YuqueTocService {
     }
 
     /**
+     * 解析 json 到 TOC 对象
+     *
+     * @param tocJson toc json
+     * @return TOC 对象
+     */
+    public TOC tocJsonToMenu(String tocJson) {
+        JSONObject obj = (JSONObject) JSONObject.parse(tocJson);
+        JSONArray data = obj.getJSONArray("data");
+        TOC toc = new TOC();
+        Map<String, MenuItem> map = new HashMap<>(); // {uuid, menuItem}
+        for (Object datum : data) {
+            JSONObject mi = (JSONObject) datum;
+            MenuItem menuItem = new MenuItem();
+            menuItem.setType(MenuItem.MenuItemType.valueOf(mi.getString("type")));
+            menuItem.setTitle(mi.getString("title"));
+            String uuid = mi.getString("uuid");
+            menuItem.setUuid(uuid);
+            menuItem.setUrl(mi.getString("url"));
+            menuItem.setLevel(mi.getInteger("level"));
+            menuItem.setSlug(mi.getString("slug")); // 分组情况下json 里 slug 是 #，先用 url
+            String parentUuid = mi.getString("parent_uuid");
+            if (StringUtils.isNotBlank(parentUuid)) {
+                MenuItem pm = map.get(parentUuid);
+                Assert.notNull(pm, "uuid: " + parentUuid + " is null!");
+                menuItem.setParentMenuItem(pm);
+                pm.getSubMenuItems().add(menuItem);
+            }
+            if (menuItem.getLevel() == 0) {
+                toc.getSubMenuItems().add(menuItem);
+            }
+            map.put(uuid, menuItem);
+        }
+        return toc;
+    }
+
+
+    /**
      * 查询语雀知识库的现有数据
      *
      * @param client
@@ -257,7 +294,6 @@ public class YuqueTocService {
         String url = "/repos/" + namespace + "/toc";
         return client.get(url);
     }
-
 
     enum SyncMode {
         /**

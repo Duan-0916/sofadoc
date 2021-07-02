@@ -9,6 +9,7 @@ public class MenuItem {
     private String url;
     private List<MenuItem> subMenuItems = new ArrayList<>();
     private MenuItem parentMenuItem;
+    private int level = 0;
     /**
      * 语雀的 uuid，运行时设置
      */
@@ -91,12 +92,39 @@ public class MenuItem {
         return this;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public MenuItem setLevel(int level) {
+        this.level = level;
+        return this;
+    }
+
+    /**
+     * 读取文件名做为文件关键字
+     *
+     * @param url 文件路径，包含文件夹
+     * @return 文件关键字
+     */
+    public String url2Slug(String url) {
+        int idx = url.lastIndexOf("/");
+        if (idx > -1) {
+            url = url.substring(idx + 1);
+        }
+        url = url.toLowerCase();
+        if (url.endsWith(".md")) {
+            url = url.substring(0, url.length() - 3);
+        }
+        return url;
+    }
+
     @Override
     public String toString() {
         return "MenuItem{" +
                 "title='" + title + '\'' +
+                ", slug=" + slug +
                 ", subMenuItems=" + subMenuItems +
-                ", ltrim=" + ltrim +
                 '}';
     }
 

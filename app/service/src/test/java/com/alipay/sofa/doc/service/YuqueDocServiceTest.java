@@ -32,21 +32,7 @@ public class YuqueDocServiceTest {
     @Test
     public void query() {
         YuqueDocService service = new YuqueDocService();
-        Doc doc = service.query(client,"zhanggeng.zg/whyya9", "cn56z2");
-    }
-
-    @Test
-    public void getSlug() {
-        YuqueDocService service = new YuqueDocService();
-        Assert.assertEquals("xxx", service.getSlug("xxx"));
-        Assert.assertEquals("xxx", service.getSlug("XXX"));
-        Assert.assertEquals("xxx", service.getSlug("XxX"));
-        Assert.assertEquals("aa-b", service.getSlug("/aa/b"));
-        Assert.assertEquals("aa-b", service.getSlug("/aa/b.md"));
-        Assert.assertEquals("aa-b", service.getSlug("aa/b.md"));
-        Assert.assertEquals("aa-b", service.getSlug("/aa/b.MD"));
-        Assert.assertEquals("aa-bb-c", service.getSlug("/aa/bb/c.md"));
-        Assert.assertEquals("aa-b-b-c", service.getSlug("/aa/b-b/c.md"));
+        Doc doc = service.query(client, "zhanggeng.zg/whyya9", "cn56z2");
     }
 
     @Test

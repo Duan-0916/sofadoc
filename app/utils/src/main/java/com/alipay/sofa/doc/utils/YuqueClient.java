@@ -1,7 +1,10 @@
 package com.alipay.sofa.doc.utils;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
@@ -15,6 +18,10 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -138,5 +145,72 @@ public class YuqueClient {
             response = "";
         }
         return response;
+    }
+
+    public File download(String url, String root, String fileName) throws IOException {
+        try {
+            File file = new File(root, fileName);
+            file.getParentFile().mkdirs();
+
+            CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+            HttpGet httpget = new HttpGet(url);
+            HttpResponse response = httpclient.execute(httpget);
+
+            HttpEntity entity = response.getEntity();
+            InputStream is = entity.getContent();
+
+            try (FileOutputStream fileout = new FileOutputStream(file)) {
+                byte[] buffer = new byte[10240];
+                int ch = 0;
+                while ((ch = is.read(buffer)) != -1) {
+                    fileout.write(buffer, 0, ch);
+                }
+                is.close();
+                fileout.flush();
+            }
+            return file;
+        } catch (IOException e) {
+            LOGGER.error("download " + url + " error!", e);
+            throw e;
+        }
+    }
+
+    /**
+     * 获取response header中Content-Disposition中的filename值
+     * @param response
+     * @return
+     */
+    public static String getFileName(HttpResponse response) {
+        Header contentHeader = response.getFirstHeader("Content-Disposition");
+        String filename = null;
+        if (contentHeader != null) {
+            HeaderElement[] values = contentHeader.getElements();
+            if (values.length == 1) {
+                NameValuePair param = values[0].getParameterByName("filename");
+                if (param != null) {
+                    try {
+                        //filename = new String(param.getValue().toString().getBytes(), "utf-8");
+                        //filename=URLDecoder.decode(param.getValue(),"utf-8");
+                        filename = param.getValue();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return filename;
+    }
+    /**
+     * 获取随机文件名
+     * @return
+     */
+    public static String getRandomFileName() {
+        return String.valueOf(System.currentTimeMillis());
+    }
+    public static void outHeaders(HttpResponse response) {
+        Header[] headers = response.getAllHeaders();
+        for (int i = 0; i < headers.length; i++) {
+            System.out.println(headers[i]);
+        }
     }
 }
