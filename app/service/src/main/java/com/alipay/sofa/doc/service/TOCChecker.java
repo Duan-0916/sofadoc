@@ -43,6 +43,7 @@ public class TOCChecker {
             for (int i = 0; i < errors.size(); i++) {
                 sb.append(i + 1).append(": ").append(errors.get(i)).append("; ");
             }
+            sb.deleteCharAt(sb.length() - 1);
             LOGGER.error("Pre-check error({}): {}", errors.size(), sb);
             throw new RuntimeException("Pre-check error: " + sb);
         }

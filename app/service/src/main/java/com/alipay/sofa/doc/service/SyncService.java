@@ -96,7 +96,9 @@ public class SyncService {
                 throw new RuntimeException("Failed to download repo: " + e.getMessage(), e);
             }
 
-            Repo repo = new Repo().setNamespace(yuqueNamespace)
+            Repo repo = new Repo()
+                    .setSite(yuqueSite)
+                    .setNamespace(yuqueNamespace)
                     .setLocalPath(FileUtils.contactPath(localPath, gitDocRoot))
                     .setGitPath(gitPath)
                     .setTocType("markdown");

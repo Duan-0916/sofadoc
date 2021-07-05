@@ -1,5 +1,8 @@
 package com.alipay.sofa.doc.model;
 
+/**
+ * 语雀知识库
+ */
 public class Repo {
     private int id;
     // Book
@@ -8,7 +11,13 @@ public class Repo {
     private String name;
     private String description;
     private String tocYml;
-    // 关键字  zhanggeng.zg/test
+    /**
+     * 站点：https://yuque.antfin.com/
+     */
+    private String site;
+    /**
+     * 命名空间  zhanggeng.zg/test
+     */
     private String namespace;
     private transient String localPath;
     private String gitPath;
@@ -113,5 +122,14 @@ public class Repo {
     public Repo setToken(String token) {
         this.token = token;
         return this;
+    }
+
+    public Repo setSite(String site) {
+        this.site = site;
+        return this;
+    }
+
+    public String getSite() {
+        return site;
     }
 }

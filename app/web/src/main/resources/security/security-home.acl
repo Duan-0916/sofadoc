@@ -1,1 +1,2 @@
 /actuator/**>ALL_VISIBLE
+/v1/rest/**>ALL_VISIBLE

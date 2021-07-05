@@ -69,7 +69,7 @@ public class YuqueDocService {
             String slug = menuItem.url2Slug(url);
             menuItem.setSlug(slug);
 
-            String newContent = getContent(repo, menuItem.getUrl(), menuItem.getTitle());
+            String newContent = getContent(repo, menuItem);
             Doc doc = query(client, namespace, slug);
             if (doc == null) { // 新增
                 doc = new Doc();
@@ -199,20 +199,23 @@ public class YuqueDocService {
         return doc;
     }
 
-    protected String getContent(Repo repo, String filePath, String title) {
+    protected String getContent(Repo repo, MenuItem menuItem) {
+        String filePath = menuItem.getUrl();
+        String title = menuItem.getTitle();
         if (filePath.startsWith("/")) {
             filePath = filePath.substring(1);
         }
         File file = new File(repo.getLocalPath(), filePath);
+        String yuqueUrl = FileUtils.contactPath(repo.getSite(), repo.getNamespace(), menuItem.getSlug());
         try {
             List<String> lines = FileUtils.readLines(file);
             boolean removeTitle = false;
             StringBuilder content = new StringBuilder(512)
                     .append(":::info\n")
-                    .append("[编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")    ")
-                    .append("[共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)\n")
-                    .append(":::\n")
-                    .append("\n\n");
+                    .append("[✏️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
+                    .append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ")
+                    .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append(")")
+                    .append("\n:::\n\n");
             for (String line : lines) {
                 if (!removeTitle) {
                     if (StringUtils.isNotBlank(line)) {
@@ -226,6 +229,15 @@ public class YuqueDocService {
                     }
                 }
                 content.append(line).append("\n");
+            }
+            // 翻页大于 16 行才追加下面的导航条
+            if (lines.size() > 16) {
+                content.append("<br /><br /><br />\n:::info\n")
+                        .append("[✏️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
+                        .append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ")
+                        .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append(")")
+                        .append("\n~本文档由gitbook-to-yuque插件自动生成。~")
+                        .append("\n:::");
             }
             return content.toString();
         } catch (Exception e) {
