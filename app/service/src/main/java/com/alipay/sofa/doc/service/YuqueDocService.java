@@ -219,10 +219,9 @@ public class YuqueDocService {
             for (String line : lines) {
                 if (!removeTitle) {
                     if (StringUtils.isNotBlank(line)) {
-                        if (line.contains("#") && line.contains(title)) {
-                            // 第一行和标题重复，删掉
-                            removeTitle = true;
-                            continue;
+                        removeTitle = true;
+                        if (line.trim().startsWith("#") && line.contains(title)) {
+                            continue; // 第一非空行和标题重复，删掉
                         }
                     } else {
                         continue;
