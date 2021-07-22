@@ -212,9 +212,10 @@ public class YuqueDocService {
             boolean removeTitle = false;
             StringBuilder content = new StringBuilder(512)
                     .append(":::info\n")
-                    .append("[✏️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
+                    .append("[✍️️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
                     .append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ")
                     .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append(")")
+                    .append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~")
                     .append("\n:::\n\n");
             for (String line : lines) {
                 if (!removeTitle) {
@@ -232,10 +233,10 @@ public class YuqueDocService {
             // 翻页大于 16 行才追加下面的导航条
             if (lines.size() > 16) {
                 content.append("<br /><br /><br />\n:::info\n")
-                        .append("[✏️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
+                        .append("[✍️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
                         .append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ")
                         .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append(")")
-                        .append("\n~本文档由gitbook-to-yuque插件自动生成。~")
+                        .append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~")
                         .append("\n:::");
             }
             return content.toString();
@@ -243,5 +244,4 @@ public class YuqueDocService {
             throw new RuntimeException(e);
         }
     }
-
 }

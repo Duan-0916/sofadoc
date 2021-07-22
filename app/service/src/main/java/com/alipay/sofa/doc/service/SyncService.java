@@ -43,6 +43,9 @@ public class SyncService {
     @Value("${sofa.doc.git.doc.root}")
     String defaultGitDocRoot;
 
+    @Value("${sofa.doc.syncTocMode}")
+    String defaultSyncTocMode;
+
     /**
      * @param request 同步请求
      * @return 同步结果
@@ -62,16 +65,15 @@ public class SyncService {
             String yuqueNamespace = request.getInputs().get("yuqueNamespace");
             YuqueTocService.SyncMode syncTocMode;
             String syncTocStr = request.getInputs().get("syncTocMode");
-            if (!StringUtils.isBlank(syncTocStr)) {
-                syncTocMode = YuqueTocService.SyncMode.valueOf(syncTocStr.toUpperCase(Locale.ROOT));
-            } else {
-                syncTocMode = YuqueTocService.SyncMode.OVERRIDE;
+            if (StringUtils.isBlank(syncTocStr)) {
+                syncTocStr = defaultSyncTocMode;
             }
+            syncTocMode = YuqueTocService.SyncMode.valueOf(syncTocStr.toUpperCase(Locale.ROOT));
 
             Assert.notNull(gitRepo, "gitRepo 不能为空");
+             Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
             Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
             Assert.notNull(yuqueToken, "yuqueToken 不能为空，请联系组件管理员或者在「.aci.yml」里设置");
-            Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
 
             String gitPath = getGitPath(gitRepo); // 不带.git的地址，用于拼接字符串
             String gitRepoName = getGitRepoName(gitRepo); // 不带 http和.git的地址，用于生成本地文件夹
