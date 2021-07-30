@@ -260,7 +260,7 @@ public class YuqueTocService {
         for (Object datum : data) {
             JSONObject mi = (JSONObject) datum;
             MenuItem menuItem = new MenuItem();
-            menuItem.setType(MenuItem.MenuItemType.valueOf(mi.getString("type")));
+            menuItem.setType(MenuItem.MenuItemType.parse(mi.getString("type")));
             menuItem.setTitle(mi.getString("title"));
             String uuid = mi.getString("uuid");
             menuItem.setUuid(uuid);
