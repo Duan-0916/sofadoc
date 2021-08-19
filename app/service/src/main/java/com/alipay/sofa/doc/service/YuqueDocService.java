@@ -214,7 +214,7 @@ public class YuqueDocService {
                     .append(":::info\n")
                     .append("[✏️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
                     .append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ")
-                    .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append(")")
+                    .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append("&product=").append(repo.getNamespace()).append(")")
                     .append("\n:::\n\n");
             for (String line : lines) {
                 if (!removeTitle) {
