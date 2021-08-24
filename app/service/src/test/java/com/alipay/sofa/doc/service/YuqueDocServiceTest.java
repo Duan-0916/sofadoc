@@ -2,7 +2,6 @@ package com.alipay.sofa.doc.service;
 
 import com.alipay.sofa.doc.model.Doc;
 import com.alipay.sofa.doc.utils.YuqueClient;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

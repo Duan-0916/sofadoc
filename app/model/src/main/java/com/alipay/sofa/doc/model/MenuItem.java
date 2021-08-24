@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuItem {
-    private MenuItemType type = MenuItemType.OHTER;
+    private MenuItemType type = MenuItemType.OTHER;
     private String title;
     private String url;
     private List<MenuItem> subMenuItems = new ArrayList<>();
@@ -144,6 +144,14 @@ public class MenuItem {
         /**
          * 其它
          */
-        OHTER
+        OTHER;
+
+        public static MenuItemType parse(String src) {
+            try {
+                return MenuItemType.valueOf(src);
+            } catch (Exception e) {
+                return MenuItemType.OTHER;
+            }
+        }
     }
 }

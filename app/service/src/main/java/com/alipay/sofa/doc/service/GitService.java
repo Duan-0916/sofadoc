@@ -47,10 +47,10 @@ public class GitService {
     @PostConstruct
     public void init() throws IOException {
         ClassPathResource resource = new ClassPathResource(gitDeployKeyFile);
-         //GitService.class.getResource(gitDeployKeyFile).getPath();
-        File tf = new File( System.getProperty("java.io.tmpdir"), System.currentTimeMillis() + ".id_rsa");
+        //GitService.class.getResource(gitDeployKeyFile).getPath();
+        File tf = new File(System.getProperty("java.io.tmpdir"), System.currentTimeMillis() + ".id_rsa");
         LOGGER.info("Temporary deploy key path is: {}", tf.getAbsolutePath());
-        IOUtils.copy(resource.getInputStream(),new FileOutputStream(tf));
+        IOUtils.copy(resource.getInputStream(), new FileOutputStream(tf));
         String keyPath = tf.getAbsolutePath();
         sshSessionFactory = new JschConfigSessionFactory() {
             @Override
@@ -67,6 +67,7 @@ public class GitService {
             }
         };
     }
+
     /**
      * @param gitPath  远程 git 地址
      * @param repoName 仓库名称
