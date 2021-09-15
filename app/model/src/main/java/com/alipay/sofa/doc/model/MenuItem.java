@@ -102,21 +102,40 @@ public class MenuItem {
     }
 
     /**
-     * 读取文件名做为文件关键字
+     * 根据路径名获取文件关键字
      *
      * @param url 文件路径，包含文件夹
      * @return 文件关键字
      */
     public String url2Slug(String url) {
-        int idx = url.lastIndexOf("/");
-        if (idx > -1) {
-            url = url.substring(idx + 1);
+        String[] arr = url.toLowerCase().split("/");
+        String slug = "";
+        for (int i=arr.length - 1; i>=0; i--) {
+            StringBuilder sb = new StringBuilder(arr[i].length());
+            for(int j=0; j<arr[i].length(); j++) {
+                char c = arr[i].charAt(j);
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.') {
+                    sb.append(c);
+                }
+            }
+            if (sb.length() == 0) {
+                continue;
+            }
+            if (slug.isEmpty()) {
+                slug = sb.toString();
+                if (slug.endsWith(".md")) {
+                    slug = slug.substring(0, slug.length() - 3);
+                }
+            } else if (sb.length() + slug.length() >= 36) {
+                return slug;
+            } else {
+                slug = sb.toString() + "-" + slug;
+            }
         }
-        url = url.toLowerCase();
-        if (url.endsWith(".md")) {
-            url = url.substring(0, url.length() - 3);
+        if (slug.length() > 36) {
+            slug = slug.substring(0, 36);
         }
-        return url;
+        return slug;
     }
 
     @Override
