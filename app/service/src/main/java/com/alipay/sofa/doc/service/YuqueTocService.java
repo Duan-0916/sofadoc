@@ -3,6 +3,8 @@ package com.alipay.sofa.doc.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.sofa.doc.model.Context;
+import com.alipay.sofa.doc.model.Context.SyncMode;
 import com.alipay.sofa.doc.model.MenuItem;
 import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.model.TOC;
@@ -30,10 +32,13 @@ public class YuqueTocService {
     /**
      * 同步整个目录，先删后增
      *
+     * @param client
      * @param repo
      * @param toc
+     * @param context
      */
-    public void syncToc(YuqueClient client, Repo repo, TOC toc, SyncMode syncTocMode) {
+    public void syncToc(YuqueClient client, Repo repo, TOC toc, Context context) {
+        SyncMode syncTocMode = context.getSyncMode();
         LOGGER.info("Sync toc of {} with mode: {}", repo.getNamespace(), syncTocMode);
         if (syncTocMode.equals(SyncMode.IGNORE)) {
             return;
@@ -293,20 +298,5 @@ public class YuqueTocService {
     protected String queryTocJson(YuqueClient client, String namespace) {
         String url = "/repos/" + namespace + "/toc";
         return client.get(url);
-    }
-
-    enum SyncMode {
-        /**
-         * 不同步，只根据目录文件来同步文档，需要手动到语雀知识库里维护目录
-         */
-        IGNORE,
-        /**
-         * 全覆盖模式，推荐！适合全部文档托管到git库的场景，先清空原有目录再同步新目录
-         */
-        OVERRIDE,
-        /**
-         * 合并模式，适合部分文档托管到git库，部分直接语雀维护的场景，自动按照一级目录进行合并，如一级目录名变化可能存在垃圾数据
-         */
-        MERGE
     }
 }

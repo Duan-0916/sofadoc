@@ -1,5 +1,6 @@
 package com.alipay.sofa.doc.service;
 
+import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.model.TOC;
 import com.alipay.sofa.doc.utils.YuqueClient;
@@ -47,7 +48,8 @@ public class YuqueTocServiceTest {
 
         TOC toc = new SummaryMdTOCParser().parseSummaryLines(lines);
         Repo repo = new Repo().setNamespace("zhanggeng.zg/whyya9");
-        service.syncToc(client, repo, toc, YuqueTocService.SyncMode.OVERRIDE);
+        Context context = new Context().setSyncMode(Context.SyncMode.OVERRIDE);
+        service.syncToc(client, repo, toc, context);
     }
 
 }

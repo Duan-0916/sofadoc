@@ -1,6 +1,7 @@
 package com.alipay.sofa.doc.service;
 
 import com.alipay.aclinkelib.common.service.facade.model.v2.AntCIComponentRestRequest;
+import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.model.SyncResult;
 import com.alipay.sofa.doc.model.TOC;
@@ -46,6 +47,9 @@ public class SyncService {
     @Value("${sofa.doc.syncTocMode}")
     String defaultSyncTocMode;
 
+    @Value("${sofa.doc.slugGenMode}")
+    String defaultSlugGenMode;
+
     /**
      * @param request 同步请求
      * @return 同步结果
@@ -63,15 +67,25 @@ public class SyncService {
                 gitDocRoot = defaultGitDocRoot;
             }
             String yuqueNamespace = request.getInputs().get("yuqueNamespace");
-            YuqueTocService.SyncMode syncTocMode;
+            Context.SyncMode syncTocMode;
             String syncTocStr = request.getInputs().get("syncTocMode");
             if (StringUtils.isBlank(syncTocStr)) {
                 syncTocStr = defaultSyncTocMode;
             }
-            syncTocMode = YuqueTocService.SyncMode.valueOf(syncTocStr.toUpperCase(Locale.ROOT));
+            syncTocMode = Context.SyncMode.valueOf(syncTocStr.toUpperCase(Locale.ROOT));
+
+            Context.SlugGenMode slugGenMode;
+            String slugGenModeStr = request.getInputs().get("slugGenMode");
+            if(StringUtils.isBlank(slugGenModeStr)){
+                slugGenModeStr = defaultSlugGenMode;
+            }
+            slugGenMode = Context.SlugGenMode.valueOf(slugGenModeStr.toUpperCase(Locale.ROOT));
+
+            String header = request.getInputs().get("header");
+            String footer = request.getInputs().get("footer");
 
             Assert.notNull(gitRepo, "gitRepo 不能为空");
-             Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
+            Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
             Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
             Assert.notNull(yuqueToken, "yuqueToken 不能为空，请联系组件管理员或者在「.aci.yml」里设置");
 
@@ -105,17 +119,20 @@ public class SyncService {
                     .setGitPath(gitPath)
                     .setTocType("markdown");
 
+            Context context = new Context().setSyncMode(syncTocMode).setSlugGenMode(slugGenMode)
+                    .setHeader(header).setFooter(footer);
+
             // 1. 解析本地目录
-            TOC toc = summaryMdTocParser.parse(repo);
+            TOC toc = summaryMdTocParser.parse(repo, context);
 
             // 2. 检查 toc 内容是否正确
-            tocChecker.check(repo, toc);
+            tocChecker.check(repo, toc, context);
 
             // 3. 根据目录进行文章同步
-            yuqueDocService.syncDocs(client, repo, toc);
+            yuqueDocService.syncDocs(client, repo, toc, context);
 
             // 4. 同步目录
-            yuqueTocService.syncToc(client, repo, toc, syncTocMode);
+            yuqueTocService.syncToc(client, repo, toc, context);
 
             String url = FileUtils.contactPath(yuqueSite, yuqueNamespace);
 
