@@ -20,3 +20,5 @@ configs:
       version: 3.5.4
     - name: jdk
       version: 8_5_9-b245-dep
+    - name: t-alipay-tengine
+      version: 1.5.3
