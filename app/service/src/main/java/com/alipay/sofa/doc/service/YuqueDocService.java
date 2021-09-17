@@ -2,6 +2,7 @@ package com.alipay.sofa.doc.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.Doc;
 import com.alipay.sofa.doc.model.MenuItem;
 import com.alipay.sofa.doc.model.Repo;
@@ -30,17 +31,18 @@ public class YuqueDocService {
     /**
      * 同步整个目录对应的文档
      *
-     * @param client YuqueClient
-     * @param repo   仓库对象
-     * @param toc    目录对象
+     * @param client  YuqueClient
+     * @param repo    仓库对象
+     * @param toc     目录对象
+     * @param context
      */
-    public void syncDocs(YuqueClient client, Repo repo, TOC toc) {
+    public void syncDocs(YuqueClient client, Repo repo, TOC toc, Context context) {
         List<MenuItem> subs = toc.getSubMenuItems();
         for (int i = 0; i < subs.size(); i++) {
             //for (int i = subs.size() - 1; i >= 0; i--) {
             // 一级目录
             MenuItem item = subs.get(i);
-            syncWithChild(client, repo, toc, item);
+            syncWithChild(client, repo, toc, context, item);
         }
     }
 
@@ -49,9 +51,10 @@ public class YuqueDocService {
      *
      * @param client   YuqueClient
      * @param toc      目标对象
+     * @param context
      * @param menuItem 目录节点
      */
-    public void sync(YuqueClient client, Repo repo, TOC toc, MenuItem menuItem) {
+    public void sync(YuqueClient client, Repo repo, TOC toc, Context context, MenuItem menuItem) {
 
         Assert.notNull(client, "client is null");
         Assert.notNull(repo, "repo is null");
@@ -65,11 +68,13 @@ public class YuqueDocService {
             LOGGER.info("  type is LINK, continue.");
             menuItem.setSlug(url);
         } else {
+
+            YuqueSlugGenerator generator = new YuqueSlugGenerator();
             // 拼接，放回
-            String slug = menuItem.url2Slug(url);
+            String slug = generator.url2Slug(url, context.getSlugGenMode());
             menuItem.setSlug(slug);
 
-            String newContent = getContent(repo, menuItem);
+            String newContent = getContent(repo, context, menuItem);
             Doc doc = query(client, namespace, slug);
             if (doc == null) { // 新增
                 doc = new Doc();
@@ -79,6 +84,7 @@ public class YuqueDocService {
                 doc.setSlug(slug);
                 insert(client, namespace, doc);
             } else { // 更新
+                doc.setTitle(menuItem.getTitle());
                 doc.setFormat("markdown");
                 doc.setBody(newContent);
                 update(client, namespace, doc);
@@ -91,16 +97,17 @@ public class YuqueDocService {
      *
      * @param repo     文档仓库
      * @param toc      目录
+     * @param context
      * @param menuItem 要添加的目标节点
      */
-    public void syncWithChild(YuqueClient client, Repo repo, TOC toc, MenuItem menuItem) {
+    public void syncWithChild(YuqueClient client, Repo repo, TOC toc, Context context, MenuItem menuItem) {
         Assert.notNull(client, "client is null");
         Assert.notNull(repo, "repo is null");
         Assert.notNull(toc, "toc is null");
         Assert.notNull(repo.getNamespace(), "namespace is null");
         // 新建一行
         LOGGER.info("sync menu item: {}, {}", menuItem.getTitle(), menuItem.getUrl());
-        sync(client, repo, toc, menuItem);
+        sync(client, repo, toc, context, menuItem);
 
         // 然后遍历子目录
         List<MenuItem> subs = menuItem.getSubMenuItems();
@@ -108,7 +115,7 @@ public class YuqueDocService {
             for (int i = 0; i < subs.size(); i++) {
                 //for (int i = subs.size() - 1; i >= 0; i--) {
                 MenuItem subMenuItem = subs.get(i);
-                syncWithChild(client, repo, toc, subMenuItem);
+                syncWithChild(client, repo, toc, context, subMenuItem);
             }
         }
     }
@@ -199,7 +206,7 @@ public class YuqueDocService {
         return doc;
     }
 
-    protected String getContent(Repo repo, MenuItem menuItem) {
+    protected String getContent(Repo repo, Context context, MenuItem menuItem) {
         String filePath = menuItem.getUrl();
         String title = menuItem.getTitle();
         if (filePath.startsWith("/")) {
@@ -210,13 +217,11 @@ public class YuqueDocService {
         try {
             List<String> lines = FileUtils.readLines(file);
             boolean removeTitle = false;
-            StringBuilder content = new StringBuilder(512)
-                    .append(":::info\n")
-                    .append("[✍️️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
-                    .append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ")
-                    .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append("&product=").append(repo.getNamespace()).append(")")
-                    .append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~")
-                    .append("\n:::\n\n");
+            StringBuilder content = new StringBuilder(512);
+            content.append(":::info\n");
+            content.append("[✍️️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ");
+            genericHeaderAndFooter(repo, yuqueUrl, content, context.getHeader());
+            content.append("\n:::\n\n");
             for (String line : lines) {
                 if (!removeTitle) {
                     if (StringUtils.isNotBlank(line)) {
@@ -232,16 +237,27 @@ public class YuqueDocService {
             }
             // 翻页大于 16 行才追加下面的导航条
             if (lines.size() > 16) {
-                content.append("<br /><br /><br />\n:::info\n")
-                        .append("[✍️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ")
-                        .append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ")
-                        .append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl).append(")")
-                        .append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~")
-                        .append("\n:::");
+                content.append("<br /><br /><br />\n:::info\n");
+                content.append("[✍️️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ");
+                genericHeaderAndFooter(repo, yuqueUrl, content, context.getFooter());
+                content.append("\n:::");
             }
             return content.toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void genericHeaderAndFooter(Repo repo, String yuqueUrl, StringBuilder content, String footer) {
+        if (StringUtils.isNotEmpty(footer)) {
+            content.append(footer);
+        } else {
+            if (repo.getNamespace().contains("middleware/")) {
+                content.append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ");
+            }
+            content.append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl)
+                    .append("&product=").append(repo.getNamespace()).append(")");
+        }
+        content.append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~");
     }
 }

@@ -101,24 +101,6 @@ public class MenuItem {
         return this;
     }
 
-    /**
-     * 读取文件名做为文件关键字
-     *
-     * @param url 文件路径，包含文件夹
-     * @return 文件关键字
-     */
-    public String url2Slug(String url) {
-        int idx = url.lastIndexOf("/");
-        if (idx > -1) {
-            url = url.substring(idx + 1);
-        }
-        url = url.toLowerCase();
-        if (url.endsWith(".md")) {
-            url = url.substring(0, url.length() - 3);
-        }
-        return url;
-    }
-
     @Override
     public String toString() {
         return "MenuItem{" +

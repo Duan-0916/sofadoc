@@ -1,5 +1,6 @@
 package com.alipay.sofa.doc.service;
 
+import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.model.TOC;
 import org.junit.Assert;
@@ -20,7 +21,8 @@ public class SummaryMdTocParserTest {
     public void testparse() throws IOException {
         String localPath = SummaryMdTocParserTest.class.getResource("/toc").getPath();
         Repo repo = new Repo().setNamespace("xxx").setLocalPath(localPath);
-        TOC toc = parser.parse(repo);
+        Context context = new Context().setSyncMode(Context.SyncMode.MERGE);
+        TOC toc = parser.parse(repo, context);
 
         Assert.assertEquals(2, toc.getSubMenuItems().size());
         Assert.assertEquals(2, toc.getSubMenuItems().get(0).getSubMenuItems().size());
@@ -29,7 +31,8 @@ public class SummaryMdTocParserTest {
     @Test(expected = RuntimeException.class)
     public void testparseError1() throws IOException {
         Repo repo = new Repo().setLocalPath("xxx");
-        TOC toc = parser.parse(repo);
+        Context context = new Context().setSyncMode(Context.SyncMode.MERGE);
+        TOC toc = parser.parse(repo, context);
     }
 
     @Test
