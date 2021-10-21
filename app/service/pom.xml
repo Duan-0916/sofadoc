@@ -33,6 +33,11 @@
             <groupId>com.alipay.linkede</groupId>
             <artifactId>aclinkelib-common-service-facade</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.alipay.mist</groupId>
+            <artifactId>mist-sdk</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
