@@ -35,11 +35,13 @@ public class SyncService {
     YuqueDocService yuqueDocService;
     @Autowired
     YuqueTocService yuqueTocService;
+    @Autowired
+    TokenService tokenService;
 
     public static final String DEFAULT_YUQUE_SITE = "https://yuque.antfin.com/";
 
-    @Value("${sofa.doc.yuque.token}")
-    String defaultYuqueToken;
+    @Value("${sofa.doc.yuque.uesr}")
+    String defaultYuequeUser;
 
     @Value("${sofa.doc.git.doc.root}")
     String defaultGitDocRoot;
@@ -58,15 +60,12 @@ public class SyncService {
         SyncResult result;
         try {
             String gitRepo = request.getInputs().get("gitRepo");
-            String yuqueToken = request.getInputs().get("yuqueToken");
-            if (StringUtils.isBlank(yuqueToken)) {
-                yuqueToken = defaultYuqueToken;
-            }
+            String yuqueNamespace = request.getInputs().get("yuqueNamespace");
             String gitDocRoot = request.getInputs().get("gitDocRoot"); // git
             if (StringUtils.isBlank(gitDocRoot)) {
                 gitDocRoot = defaultGitDocRoot;
             }
-            String yuqueNamespace = request.getInputs().get("yuqueNamespace");
+
             Context.SyncMode syncTocMode;
             String syncTocStr = request.getInputs().get("syncTocMode");
             if (StringUtils.isBlank(syncTocStr)) {
@@ -84,10 +83,21 @@ public class SyncService {
             String header = request.getInputs().get("header");
             String footer = request.getInputs().get("footer");
 
+            // 先找是否有自定义 token，没有的话再找是否有自定义 user，否则走默认 user
+            String yuqueToken = request.getInputs().get("yuqueToken");
+            if (StringUtils.isBlank(yuqueToken)) {
+                String yuqueUser = request.getInputs().get("yuqueUser");
+                if (StringUtils.isBlank(yuqueUser)) {
+                    yuqueUser = defaultYuequeUser;
+                }
+                yuqueToken = tokenService.getTokenByUser(yuqueUser);
+            }
+
             Assert.notNull(gitRepo, "gitRepo 不能为空");
             Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
             Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
-            Assert.notNull(yuqueToken, "yuqueToken 不能为空，请联系组件管理员或者在「.aci.yml」里设置");
+            Assert.notNull(yuqueToken, "yuqueToken 不能为空，请添加「蚂蚁集团中间件」为语雀成员，" +
+                    "或在 aci.yml 里配置 yuqueToken，或在 aci.yml 里配置 yuqueUser 并联系管理员托管 token。");
 
             String gitPath = getGitPath(gitRepo); // 不带.git的地址，用于拼接字符串
             String gitRepoName = getGitRepoName(gitRepo); // 不带 http和.git的地址，用于生成本地文件夹
