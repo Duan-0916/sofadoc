@@ -107,8 +107,7 @@ public class GitService {
             } else {
                 // 每次都重新下载，支持毫秒级并发
                 localPath = new File(gitCacheRepo + "/" + repoName + "_" + System.currentTimeMillis());
-                File gitDir = new File(localPath, ".git");
-                LOGGER.info("remove old directory and try git clone: {}", gitDir.getAbsolutePath());
+                LOGGER.info("remove old directory and try git clone: {}", localPath.getAbsolutePath());
                 FileUtils.cleanDirectory(localPath);
                 git = gitClone(gitPath, branch, localPath);
                 LOGGER.info("git clone success! {}", localPath.getAbsolutePath());

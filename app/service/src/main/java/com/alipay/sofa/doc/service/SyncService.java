@@ -157,6 +157,7 @@ public class SyncService {
             LOGGER.error("同步异常：" + e.getMessage(), e);
         } finally {
             if (!cacheEnable && localPath != null) {
+                LOGGER.info("remove old directory after sync: {}", localPath);
                 FileUtils.cleanDirectory(new File(localPath));
             }
         }
