@@ -77,31 +77,37 @@ public class GitService {
      * @throws Exception 出现异常
      */
     public String clone(String gitPath, String repoName, String branch, String commitId) throws Exception {
-        File localPath = new File(gitCacheRepo + "/" + repoName);
-        File gitDir = new File(localPath, ".git");
+        File localPath;
         Git git = null;
         try {
-            if (cacheEnable && gitDir.exists()) {
-                // git pull
-                LOGGER.info(".git directory exists, try git pull: {}", gitDir.getAbsolutePath());
-                git = new Git(new FileRepository(gitDir));
-                try {
-                    gitPull(git, branch);
-                    LOGGER.info("git pull success! {}", gitDir.getAbsolutePath());
-                } catch (Exception e) {
-                    LOGGER.warn("git pull failed, try remove directory and git clone: " + gitDir.getAbsolutePath(), e);
-                    git.close();
+            if (cacheEnable) {
+                // 可以加快速度，但是同一个仓库并发同步的情况下，缓存模式可能会报错
+                localPath = new File(gitCacheRepo + "/" + repoName);
+                File gitDir = new File(localPath, ".git");
+                if (gitDir.exists()) {
+                    // git pull
+                    LOGGER.info(".git directory exists, try git pull: {}", gitDir.getAbsolutePath());
+                    git = new Git(new FileRepository(gitDir));
+                    try {
+                        gitPull(git, branch);
+                        LOGGER.info("git pull success! {}", gitDir.getAbsolutePath());
+                    } catch (Exception e) {
+                        LOGGER.warn("git pull failed, try remove directory and git clone: " + gitDir.getAbsolutePath(), e);
+                        git.close();
+                        FileUtils.cleanDirectory(localPath);
+                        git = gitClone(gitPath, branch, localPath);
+                        LOGGER.info("git clone success! {}", localPath.getAbsolutePath());
+                    }
+                } else {
+                    LOGGER.info(".git directory not exists, try git clone: {}", gitDir.getAbsolutePath());
                     FileUtils.cleanDirectory(localPath);
                     git = gitClone(gitPath, branch, localPath);
                     LOGGER.info("git clone success! {}", localPath.getAbsolutePath());
                 }
             } else {
-                // git clone
-                if (cacheEnable) {
-                    LOGGER.info(".git directory not exists, try git clone: {}", gitDir.getAbsolutePath());
-                } else {
-                    LOGGER.info("remove old directory and try git clone: {}", gitDir.getAbsolutePath());
-                }
+                // 每次都重新下载，支持毫秒级并发
+                localPath = new File(gitCacheRepo + "/" + repoName + "_" + System.currentTimeMillis());
+                LOGGER.info("remove old directory and try git clone: {}", localPath.getAbsolutePath());
                 FileUtils.cleanDirectory(localPath);
                 git = gitClone(gitPath, branch, localPath);
                 LOGGER.info("git clone success! {}", localPath.getAbsolutePath());

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.io.File;
 import java.util.Locale;
 
 /**
@@ -52,12 +53,16 @@ public class SyncService {
     @Value("${sofa.doc.slugGenMode}")
     String defaultSlugGenMode;
 
+    @Value("${sofa.doc.git.cacheEnable}")
+    boolean cacheEnable = true;
+
     /**
      * @param request 同步请求
      * @return 同步结果
      */
     public SyncResult doSync(AntCIComponentRestRequest request) {
         SyncResult result;
+        String localPath = null;
         try {
             String gitRepo = request.getInputs().get("gitRepo");
             String yuqueNamespace = request.getInputs().get("yuqueNamespace");
@@ -115,7 +120,6 @@ public class SyncService {
             YuqueClient client = new YuqueClient(baseUrl, yuqueToken);
 
             // 0. 下载代码到本地并解析
-            String localPath;
             try {
                 localPath = gitService.clone(gitShhRepo, gitRepoName, gitBranch, gitCommitId);
             } catch (Exception e) {
@@ -151,6 +155,11 @@ public class SyncService {
         } catch (Exception e) {
             result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看后台日志");
             LOGGER.error("同步异常：" + e.getMessage(), e);
+        } finally {
+            if (!cacheEnable && localPath != null) {
+                LOGGER.info("remove old directory after sync: {}", localPath);
+                FileUtils.cleanDirectory(new File(localPath));
+            }
         }
         return result;
     }
