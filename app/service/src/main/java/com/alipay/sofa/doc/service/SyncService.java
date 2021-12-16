@@ -134,7 +134,7 @@ public class SyncService {
                     .setTocType("markdown");
 
             Context context = new Context().setSyncMode(syncTocMode).setSlugGenMode(slugGenMode)
-                    .setHeader(header).setFooter(footer);
+                    .setHeader(header).setFooter(footer).setGitDocRoot(gitDocRoot);
 
             // 1. 解析本地目录
             TOC toc = summaryMdTocParser.parse(repo, context);

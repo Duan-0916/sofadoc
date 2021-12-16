@@ -13,6 +13,8 @@ public class Context {
 
     private String footer;
 
+    private String gitDocRoot;
+
     public SyncMode getSyncMode() {
         return syncMode;
     }
@@ -46,6 +48,15 @@ public class Context {
 
     public Context setFooter(String footer) {
         this.footer = footer;
+        return this;
+    }
+
+    public String getGitDocRoot() {
+        return gitDocRoot;
+    }
+
+    public Context setGitDocRoot(String gitDocRoot) {
+        this.gitDocRoot = gitDocRoot;
         return this;
     }
 

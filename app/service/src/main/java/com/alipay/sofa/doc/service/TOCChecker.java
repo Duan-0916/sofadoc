@@ -56,7 +56,7 @@ public class TOCChecker {
      *
      * @param repo     文档仓库
      * @param toc      目录
-     * @param context
+     * @param context  同步上下文
      * @param menuItem 要添加的目标节点
      * @param slugs    已存在的文章列表
      */
@@ -103,7 +103,7 @@ public class TOCChecker {
         if (slugs.contains(slug)) {
             errors.add("[" + url + "] 存在同名文件，请检查");
         } else if (!isLegalSlug(slug)) {
-            errors.add("[" + url + "] 生成的 slug [" + slug + "] 不合法（访问路径至少 2 个字符，只能输入小写字母、数字、横线、下划线和点），请检查");
+            errors.add("[" + url + "] 生成的 slug [" + slug + "] 不合法（语雀访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点），请检查");
         } else {
             slugs.add(slug);
         }
@@ -113,7 +113,7 @@ public class TOCChecker {
     private static final String SLUG_REGEX = "^[a-z0-9\\._-]{2,36}$";
 
     /**
-     * 访问路径至少 2 个字符，只能输入小写字母、数字、横线、下划线和点
+     * 访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点
      *
      * @param slug
      * @return 是否合法

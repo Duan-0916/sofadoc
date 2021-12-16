@@ -219,7 +219,7 @@ public class YuqueDocService {
             boolean removeTitle = false;
             StringBuilder content = new StringBuilder(512);
             content.append(":::info\n");
-            content.append("[✍️️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ");
+            content.append("[✍️️ 编辑本文档](").append(generateEditURL(repo, context, filePath)).append(")        ");
             genericHeaderAndFooter(repo, yuqueUrl, content, context.getHeader());
             content.append("\n:::\n\n");
             for (String line : lines) {
@@ -238,7 +238,7 @@ public class YuqueDocService {
             // 翻页大于 16 行才追加下面的导航条
             if (lines.size() > 16) {
                 content.append("<br /><br /><br />\n:::info\n");
-                content.append("[✍️️ 编辑本文档](").append(repo.getGitPath()).append("/edit/master/").append(filePath).append(")        ");
+                content.append("[✍️️ 编辑本文档](").append(generateEditURL(repo, context, filePath)).append(")        ");
                 genericHeaderAndFooter(repo, yuqueUrl, content, context.getFooter());
                 content.append("\n:::");
             }
@@ -246,6 +246,54 @@ public class YuqueDocService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String generateEditURL(Repo repo, Context context, String filePath) {
+        // https://alex.alipay.com/unify/git-to-yuque?project={groupname/reponame}&branch={branchname}&filepath={filepath}
+        String temp = "https://alex.alipay.com/unify/git-to-yuque?project=%s&branch=master&filepath=%s";
+        return String.format(temp, getProject(repo.getGitPath()), getFilePath(context, filePath));
+    }
+
+    /**
+     * @param git http://code.alipay.com/zhanggeng.zg/test-doc
+     * @return zhanggeng.zg/test-doc
+     */
+    String getProject(String git) {
+        if (git.endsWith(".git")) {
+            git = git.substring(0, git.length() - 4);
+        }
+        int idx = git.lastIndexOf("/");
+        String repo = git.substring(idx + 1);
+        git = git.substring(0, idx);
+        idx = git.lastIndexOf("/");
+        String group = git.substring(idx + 1);
+        return group + "/" + repo;
+    }
+
+    /**
+     * @param context 上下文，包括同步路径，例如 / 和  /doc
+     * @param filePath 文件路径
+     * @return 同步路径 + 文件路径
+     */
+    String getFilePath(Context context, String filePath) {
+        String path;
+        if (context != null) {
+            String gitDocRoot = context.getGitDocRoot();
+            if (StringUtils.isNotEmpty(gitDocRoot)) {
+                if (gitDocRoot.endsWith("/")) {
+                    gitDocRoot = gitDocRoot.substring(0, gitDocRoot.length() - 1);
+                }
+                path = gitDocRoot + "/" + (filePath.startsWith("/") ? filePath.substring(1) : filePath);
+            } else {
+                path = filePath;
+            }
+        } else {
+            path = filePath;
+        }
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
     }
 
     private void genericHeaderAndFooter(Repo repo, String yuqueUrl, StringBuilder content, String footer) {
