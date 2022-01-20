@@ -74,6 +74,7 @@ public class YuqueDocService {
             String slug = generator.url2Slug(url, context.getSlugGenMode());
             menuItem.setSlug(slug);
 
+            long start = System.currentTimeMillis();
             String newContent = getContent(repo, context, menuItem);
             Doc doc = query(client, namespace, slug);
             if (doc == null) { // 新增
@@ -88,6 +89,14 @@ public class YuqueDocService {
                 doc.setFormat("markdown");
                 doc.setBody(newContent);
                 update(client, namespace, doc);
+            }
+            try { // TODO 语雀 API 限流，先用 Sleep，后续改成增量同步
+                long elapsed = System.currentTimeMillis() - start;
+                if (elapsed < 150) {
+                    Thread.sleep(150 - elapsed);
+                }
+            } catch (InterruptedException e) {
+                // NOPMD
             }
         }
     }

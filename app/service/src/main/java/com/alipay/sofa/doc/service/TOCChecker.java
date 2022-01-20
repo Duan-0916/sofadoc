@@ -97,11 +97,11 @@ public class TOCChecker {
         // 检查文件是否存在
         File file = new File(repo.getLocalPath(), menuItem.getUrl());
         if (!file.exists()) {
-            errors.add("[" + url + "] 文件 " + file.getAbsolutePath() + " 不存在");
+            errors.add("[" + url + "] 文件 " + file.getAbsolutePath() + " 不存在，请检查文件名是否正确，或者文件夹名是否正确");
         }
         String slug = new YuqueSlugGenerator().url2Slug(url, context.getSlugGenMode());
         if (slugs.contains(slug)) {
-            errors.add("[" + url + "] 存在同名文件，请检查");
+            errors.add("[" + url + "] 存在同访问路径，请检查是否存在多个同名文件");
         } else if (!isLegalSlug(slug)) {
             errors.add("[" + url + "] 生成的 slug [" + slug + "] 不合法（语雀访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点），请检查");
         } else {
