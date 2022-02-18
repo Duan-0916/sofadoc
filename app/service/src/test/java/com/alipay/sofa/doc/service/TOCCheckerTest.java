@@ -49,13 +49,13 @@ public class TOCCheckerTest {
     public void testIsLegalSlug() {
         TOCChecker checker = new TOCChecker();
         Assert.assertFalse(checker.isLegalSlug("a"));
-        Assert.assertFalse(checker.isLegalSlug("ab"));
         Assert.assertFalse(checker.isLegalSlug("1231中文"));
         Assert.assertFalse(checker.isLegalSlug("1231/"));
         Assert.assertFalse(checker.isLegalSlug("AAA"));
         Assert.assertFalse(checker.isLegalSlug("..112"));
         Assert.assertFalse(checker.isLegalSlug("1234567890123456789012345678901234567"));
 
+        Assert.assertTrue(checker.isLegalSlug("ab"));
         Assert.assertTrue(checker.isLegalSlug("faq"));
         Assert.assertTrue(checker.isLegalSlug("1231-11"));
         Assert.assertTrue(checker.isLegalSlug("aabb_222"));
