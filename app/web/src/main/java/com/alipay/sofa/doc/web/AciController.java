@@ -160,13 +160,9 @@ public class AciController {
         SyncRequest syncRequest = new SyncRequest();
 
         try {
-            syncRequest.setSyncMode(request.getInputs().get("syncTocMode"));
-            syncRequest.setSlugGenMode(request.getInputs().get("slugGenMode"));
-            syncRequest.setHeader(request.getInputs().get("header"));
-            syncRequest.setFooter(request.getInputs().get("footer"));
-            syncRequest.setYuqueToken(request.getInputs().get("yuqueToken"));
-            syncRequest.setYuqueUser(request.getInputs().get("yuqueUser"));
-            syncRequest.setYuqueNamespace(request.getInputs().get("yuqueNamespace"));
+            String yuqueNamespace = request.getInputs().get("yuqueNamespace");
+            Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
+            syncRequest.setYuqueNamespace(yuqueNamespace);
 
             String gitRepo = request.getInputs().get("gitRepo");
             String gitDocRoot = request.getInputs().get("gitDocRoot"); // git
@@ -190,6 +186,14 @@ public class AciController {
                 throw new RuntimeException("Failed to download repo: " + e.getMessage(), e);
             }
             syncRequest.setLocalRepoPath(localRepoPath);
+
+            // 可选参数
+            syncRequest.setSyncMode(request.getInputs().get("syncTocMode"));
+            syncRequest.setSlugGenMode(request.getInputs().get("slugGenMode"));
+            syncRequest.setHeader(request.getInputs().get("header"));
+            syncRequest.setFooter(request.getInputs().get("footer"));
+            syncRequest.setYuqueToken(request.getInputs().get("yuqueToken"));
+            syncRequest.setYuqueUser(request.getInputs().get("yuqueUser"));
 
             return syncRequest;
         } catch (Exception e) {

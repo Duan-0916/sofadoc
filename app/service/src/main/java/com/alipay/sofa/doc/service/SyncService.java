@@ -55,6 +55,24 @@ public class SyncService {
         SyncResult result;
         try {
             String yuqueNamespace = request.getYuqueNamespace();
+            Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
+
+            String gitRepo = request.getLocalRepoPath();
+            String gitDocRoot = request.getGitDocRoot();
+            Assert.notNull(gitRepo, "gitRepo 不能为空");
+            Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
+
+            // 先找是否有自定义 token，没有的话再找是否有自定义 user，否则走默认 user
+            String yuqueToken = request.getYuqueToken();
+            if (StringUtils.isBlank(yuqueToken)) {
+                String yuqueUser = request.getYuqueUser();
+                if (StringUtils.isBlank(yuqueUser)) {
+                    yuqueUser = defaultYuequeUser;
+                }
+                yuqueToken = tokenService.getTokenByUser(yuqueUser);
+            }
+            Assert.notNull(yuqueToken, "yuqueToken 不能为空，请添加「蚂蚁集团中间件」为语雀成员，" +
+                    "或在 aci.yml 里配置 yuqueToken，或在 aci.yml 里配置 yuqueUser 并联系管理员托管 token。");
 
             Context.SyncMode syncTocMode;
             String syncTocStr = request.getSyncMode();
@@ -73,20 +91,6 @@ public class SyncService {
             String header = request.getHeader();
             String footer = request.getFooter();
 
-            // 先找是否有自定义 token，没有的话再找是否有自定义 user，否则走默认 user
-            String yuqueToken = request.getYuqueToken();
-            if (StringUtils.isBlank(yuqueToken)) {
-                String yuqueUser = request.getYuqueUser();
-                if (StringUtils.isBlank(yuqueUser)) {
-                    yuqueUser = defaultYuequeUser;
-                }
-                yuqueToken = tokenService.getTokenByUser(yuqueUser);
-            }
-
-            Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
-            Assert.notNull(yuqueToken, "yuqueToken 不能为空，请添加「蚂蚁集团中间件」为语雀成员，" +
-                    "或在 aci.yml 里配置 yuqueToken，或在 aci.yml 里配置 yuqueUser 并联系管理员托管 token。");
-
             String yuqueSite = request.getYuqueSite();
             if (StringUtils.isBlank(yuqueSite)) {
                 yuqueSite = DEFAULT_YUQUE_SITE;
@@ -100,12 +104,12 @@ public class SyncService {
             Repo repo = new Repo()
                     .setSite(yuqueSite)
                     .setNamespace(yuqueNamespace)
-                    .setLocalDocPath(FileUtils.contactPath(request.getLocalRepoPath(), request.getGitDocRoot())) // 下载代码到本地的地址
+                    .setLocalDocPath(FileUtils.contactPath(gitRepo, gitDocRoot)) // 下载代码到本地的地址
                     .setGitHttpURL(request.getGitHttpURL()) // 不带.git的地址，用于拼接字符串
                     .setTocType("markdown");
 
             Context context = new Context().setSyncMode(syncTocMode).setSlugGenMode(slugGenMode)
-                    .setHeader(header).setFooter(footer).setGitDocRoot(request.getGitDocRoot());
+                    .setHeader(header).setFooter(footer).setGitDocRoot(gitDocRoot);
 
             // 1. 解析本地目录
             TOC toc = summaryMdTocParser.parse(repo, context);
