@@ -169,7 +169,8 @@ public class YuqueDocService {
         JSONObject data = res.getJSONObject("data");
         if (data == null) {
             // 创建不成功
-            throw new RuntimeException("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
+            LOGGER.error("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
+            throw new RuntimeException("新增语雀文档失败，请检查知识库是否存在或者当前同步用户有知识库操作权限");
         } else {
             doc.setId(data.getInteger("id"));
         }
@@ -201,7 +202,8 @@ public class YuqueDocService {
         JSONObject data = res.getJSONObject("data");
         if (data == null) {
             // 更新不成功
-            throw new RuntimeException("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
+            LOGGER.error("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
+            throw new RuntimeException("更新语雀文档失败，请检查文档和知识库是否存在或者当前同步用户有知识库操作权限");
         }
     }
 
