@@ -174,14 +174,14 @@ public class YuqueTocService {
         Assert.notNull(client, "client is null");
 
         if (menuItem.getUuid() != null) {
-            LOGGER.info("remove children of menu item: {}, url: {},  {}, parent: {}", menuItem.getTitle(),
-                    menuItem.getSlug(), menuItem.getType().name(), parentMenuItem.getTitle());
+            LOGGER.info("remove children of menu item: {}, url: {},  {}, parent: {}, {}", menuItem.getTitle(),
+                    menuItem.getSlug(), menuItem.getType().name(), parentMenuItem.getTitle(), parentMenuItem.getUuid());
             // 复用当前目录，但清空子目录
             removeChildren(client, namespace, menuItem.getUuid());
         } else {
             // 新建一个目录
-            LOGGER.info("insert menu item: {}, {}, {}, parent:{}", menuItem.getTitle(), menuItem.getSlug(),
-                    menuItem.getType().name(), parentMenuItem.getTitle());
+            LOGGER.info("insert menu item: {}, {}, {}, parent:{}, {}, lastUuid: {}", menuItem.getTitle(), menuItem.getSlug(),
+                    menuItem.getType().name(), parentMenuItem.getTitle(), parentMenuItem.getUuid(), lastUuid);
             String uuid = insert(client, namespace, menuItem, parentMenuItem, lastUuid);
             menuItem.setUuid(uuid);
         }

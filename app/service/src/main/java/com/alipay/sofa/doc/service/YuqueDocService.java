@@ -223,15 +223,16 @@ public class YuqueDocService {
         if (filePath.startsWith("/")) {
             filePath = filePath.substring(1);
         }
-        File file = new File(repo.getLocalPath(), filePath);
+        File file = new File(repo.getLocalDocPath(), filePath);
         String yuqueUrl = FileUtils.contactPath(repo.getSite(), repo.getNamespace(), menuItem.getSlug());
         try {
             List<String> lines = FileUtils.readLines(file);
             boolean removeTitle = false;
             StringBuilder content = new StringBuilder(512);
             content.append(":::info\n");
-            content.append("[✍️️ 编辑本文档](").append(generateEditURL(repo, context, filePath)).append(")        ");
+            generateEditURL(repo, content, context, filePath);
             genericHeaderAndFooter(repo, yuqueUrl, content, context.getHeader());
+            content.append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~");
             content.append("\n:::\n\n");
             for (String line : lines) {
                 if (!removeTitle) {
@@ -249,8 +250,9 @@ public class YuqueDocService {
             // 翻页大于 16 行才追加下面的导航条
             if (lines.size() > 16) {
                 content.append("<br /><br /><br />\n:::info\n");
-                content.append("[✍️️ 编辑本文档](").append(generateEditURL(repo, context, filePath)).append(")        ");
+                generateEditURL(repo, content, context, filePath);
                 genericHeaderAndFooter(repo, yuqueUrl, content, context.getFooter());
+                content.append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~");
                 content.append("\n:::");
             }
             return content.toString();
@@ -259,10 +261,13 @@ public class YuqueDocService {
         }
     }
 
-    private String generateEditURL(Repo repo, Context context, String filePath) {
+    private void generateEditURL(Repo repo, StringBuilder content, Context context, String filePath) {
         // https://alex.alipay.com/unify/git-to-yuque?project={groupname/reponame}&branch={branchname}&filepath={filepath}
-        String temp = "https://alex.alipay.com/unify/git-to-yuque?project=%s&branch=master&filepath=%s";
-        return String.format(temp, getProject(repo.getGitPath()), getFilePath(context, filePath));
+        if (StringUtils.isNotEmpty(repo.getGitHttpURL())) {
+            String temp = "https://alex.alipay.com/unify/git-to-yuque?project=%s&branch=master&filepath=%s";
+            String URL = String.format(temp, getProject(repo.getGitHttpURL()), getFilePath(context, filePath));
+            content.append("[✍️️ 编辑本文档](").append(URL).append(")        ");
+        }
     }
 
     /**
@@ -307,9 +312,9 @@ public class YuqueDocService {
         return path;
     }
 
-    private void genericHeaderAndFooter(Repo repo, String yuqueUrl, StringBuilder content, String footer) {
-        if (StringUtils.isNotEmpty(footer)) {
-            content.append(footer);
+    private void genericHeaderAndFooter(Repo repo, String yuqueUrl, StringBuilder content, String headerOrFooter) {
+        if (StringUtils.isNotEmpty(headerOrFooter)) {
+            content.append(headerOrFooter);
         } else {
             if (repo.getNamespace().contains("middleware/")) {
                 content.append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ");
@@ -317,6 +322,5 @@ public class YuqueDocService {
             content.append("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=").append(yuqueUrl)
                     .append("&product=").append(repo.getNamespace()).append(")");
         }
-        content.append("\n~注：本文档由git-to-yuque插件自动生成，请勿直接通过语雀自身编辑。~");
     }
 }

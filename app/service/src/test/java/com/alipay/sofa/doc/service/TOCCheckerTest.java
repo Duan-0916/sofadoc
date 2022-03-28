@@ -18,7 +18,7 @@ public class TOCCheckerTest {
     @Test
     public void testCheck() throws IOException {
         TOCChecker checker = new TOCChecker();
-        Repo repo = new Repo().setNamespace("xxx/yyy").setLocalPath(Files.createTempDirectory(null).toAbsolutePath().toString());
+        Repo repo = new Repo().setNamespace("xxx/yyy").setLocalDocPath(Files.createTempDirectory(null).toAbsolutePath().toString());
         TOC toc = new TOC();
         toc.getSubMenuItems().add(new MenuItem().setTitle("xxx").setType(MenuItem.MenuItemType.DOC).setUrl("../xxx.md"));
         toc.getSubMenuItems().add(new MenuItem().setTitle("yyy").setType(MenuItem.MenuItemType.DOC).setUrl("./yyy.md"));

@@ -20,7 +20,7 @@ public class SummaryMdTocParserTest {
     @Test
     public void testparse() throws IOException {
         String localPath = SummaryMdTocParserTest.class.getResource("/toc").getPath();
-        Repo repo = new Repo().setNamespace("xxx").setLocalPath(localPath);
+        Repo repo = new Repo().setNamespace("xxx").setLocalDocPath(localPath);
         Context context = new Context().setSyncMode(Context.SyncMode.MERGE);
         TOC toc = parser.parse(repo, context);
 
@@ -30,7 +30,7 @@ public class SummaryMdTocParserTest {
 
     @Test(expected = RuntimeException.class)
     public void testparseError1() throws IOException {
-        Repo repo = new Repo().setLocalPath("xxx");
+        Repo repo = new Repo().setLocalDocPath("xxx");
         Context context = new Context().setSyncMode(Context.SyncMode.MERGE);
         TOC toc = parser.parse(repo, context);
     }

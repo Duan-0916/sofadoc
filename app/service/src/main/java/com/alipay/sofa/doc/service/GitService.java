@@ -69,21 +69,34 @@ public class GitService {
     }
 
     /**
-     * @param gitPath  远程 git 地址
+     * @param gitRepo  repo 地址
+     * @param branch   分支
+     * @param commitId 分支提交Id
+     * @return 本地地址
+     * @throws Exception 出现异常
+     */
+    public String clone(String gitRepo, String branch, String commitId) throws Exception {
+        String gitRepoName = getGitRepoName(gitRepo); // 不带 http和.git的地址，用于生成本地文件夹，例如：code.alipay.com/zhanggeng.zg/test-doc
+        String gitSshURL = getGitSshURL(gitRepo); // git 开头的地址，用于下载代码，例如：git@code.alipay.com:zhanggeng.zg/test-doc.git
+        return clone(gitSshURL, gitRepoName, branch, commitId);
+    }
+
+    /**
+     * @param gitSshURL  远程 git 地址
      * @param repoName 仓库名称
      * @param branch   分支
      * @param commitId 分支提交Id
      * @return 本地地址
      * @throws Exception 出现异常
      */
-    public String clone(String gitPath, String repoName, String branch, String commitId) throws Exception {
-        File localPath;
+    public String clone(String gitSshURL, String repoName, String branch, String commitId) throws Exception {
+        File localRepoPath;
         Git git = null;
         try {
             if (cacheEnable) {
                 // 可以加快速度，但是同一个仓库并发同步的情况下，缓存模式可能会报错
-                localPath = new File(gitCacheRepo + "/" + repoName);
-                File gitDir = new File(localPath, ".git");
+                localRepoPath = new File(gitCacheRepo + "/" + repoName);
+                File gitDir = new File(localRepoPath, ".git");
                 if (gitDir.exists()) {
                     // git pull
                     LOGGER.info(".git directory exists, try git pull: {}", gitDir.getAbsolutePath());
@@ -94,23 +107,23 @@ public class GitService {
                     } catch (Exception e) {
                         LOGGER.warn("git pull failed, try remove directory and git clone: " + gitDir.getAbsolutePath(), e);
                         git.close();
-                        FileUtils.cleanDirectory(localPath);
-                        git = gitClone(gitPath, branch, localPath);
-                        LOGGER.info("git clone success! {}", localPath.getAbsolutePath());
+                        FileUtils.cleanDirectory(localRepoPath);
+                        git = gitClone(gitSshURL, branch, localRepoPath);
+                        LOGGER.info("git clone success! {}", localRepoPath.getAbsolutePath());
                     }
                 } else {
                     LOGGER.info(".git directory not exists, try git clone: {}", gitDir.getAbsolutePath());
-                    FileUtils.cleanDirectory(localPath);
-                    git = gitClone(gitPath, branch, localPath);
-                    LOGGER.info("git clone success! {}", localPath.getAbsolutePath());
+                    FileUtils.cleanDirectory(localRepoPath);
+                    git = gitClone(gitSshURL, branch, localRepoPath);
+                    LOGGER.info("git clone success! {}", localRepoPath.getAbsolutePath());
                 }
             } else {
                 // 每次都重新下载，支持毫秒级并发
-                localPath = new File(gitCacheRepo + "/" + repoName + "_" + System.currentTimeMillis());
-                LOGGER.info("remove old directory and try git clone: {}", localPath.getAbsolutePath());
-                FileUtils.cleanDirectory(localPath);
-                git = gitClone(gitPath, branch, localPath);
-                LOGGER.info("git clone success! {}", localPath.getAbsolutePath());
+                localRepoPath = new File(gitCacheRepo + "/" + repoName + "_" + System.currentTimeMillis());
+                LOGGER.info("remove old directory and try git clone: {}", localRepoPath.getAbsolutePath());
+                FileUtils.cleanDirectory(localRepoPath);
+                git = gitClone(gitSshURL, branch, localRepoPath);
+                LOGGER.info("git clone success! {}", localRepoPath.getAbsolutePath());
             }
             // git checkout
             checkOutCommitId(git, commitId, "c_" + commitId);
@@ -119,7 +132,7 @@ public class GitService {
                 git.close();
             }
         }
-        return localPath.getAbsolutePath();
+        return localRepoPath.getAbsolutePath();
     }
 
     /**
@@ -167,5 +180,60 @@ public class GitService {
             // 如果分支已存在，直接切
             git.checkout().setName(newBranch).setStartPoint(commitId).call();
         }
+    }
+
+    /**
+     * @param gitRepo http://gitlab.alipay-inc.com/zhanggeng.zg/test-doc.git
+     * @return git@code.alipay.com:zhanggeng.zg/test-doc.git
+     */
+    String getGitSshURL(String gitRepo) {
+        gitRepo = gitRepo.replace("gitlab.alipay-inc.com", "code.alipay.com");
+        String sshURL = gitRepo.replace("http://", "git@")
+                .replace("git://", "git@")
+                .replace("https://", "git@")
+                .replace(":", "/")
+                .replaceFirst("/", ":");
+        if (sshURL.endsWith("/")) {
+            sshURL = sshURL.substring(0, sshURL.length() - 1);
+        }
+        if (!sshURL.endsWith(".git")) {
+            sshURL = sshURL + ".git";
+        }
+        return sshURL;
+    }
+
+    /**
+     * @param gitRepo git@code.alipay.com:zhanggeng.zg/test-doc
+     * @return http://code.alipay.com/zhanggeng.zg/test-doc
+     */
+    public String getGitHttpURL(String gitRepo) {
+        gitRepo = gitRepo.replace("gitlab.alipay-inc.com", "code.alipay.com");
+        gitRepo = gitRepo.replace("git@", "http://");
+        gitRepo = gitRepo.replace("git://", "http://");
+        if (gitRepo.endsWith(".git")) {
+            gitRepo = gitRepo.substring(0, gitRepo.length() - 4);
+        }
+        if (gitRepo.endsWith("/")) {
+            gitRepo = gitRepo.substring(0, gitRepo.length() - 1);
+        }
+        gitRepo = gitRepo.replace(":", "/");
+        gitRepo = gitRepo.replace("http///", "http://");
+        gitRepo = gitRepo.replace("https///", "https://");
+        return gitRepo;
+    }
+
+    /**
+     * @param gitRepo http://gitlab.alipay-inc.com/zhanggeng.zg/test-doc.git 或者 git@code.alipay.com:zhanggeng.zg/test-doc.git
+     * @return 唯一路径 code.alipay.com/zhanggeng.zg/test-doc
+     */
+    String getGitRepoName(String gitRepo) {
+        String gitPath = getGitHttpURL(gitRepo);
+        if (gitPath.contains("://")) {
+            gitPath = gitPath.substring(gitPath.indexOf("://") + 3);
+        } else if (gitPath.contains("@")) {
+            gitPath = gitPath.substring(gitPath.indexOf("@") + 1);
+        }
+        gitPath = gitPath.replace(":", "/");
+        return gitPath;
     }
 }

@@ -22,7 +22,7 @@ public class SummaryMdTOCParser implements TOCParser {
 
     public TOC parse(Repo repo, Context context) {
         List<String> lines = null;
-        File summaryFile = new File(repo.getLocalPath(), TOC_MD);
+        File summaryFile = new File(repo.getLocalDocPath(), TOC_MD);
         try {
             lines = FileUtils.readLines(summaryFile);
         } catch (IOException e) {
