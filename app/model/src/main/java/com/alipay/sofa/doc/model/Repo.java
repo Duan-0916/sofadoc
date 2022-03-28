@@ -19,8 +19,14 @@ public class Repo {
      * 命名空间  zhanggeng.zg/test
      */
     private String namespace;
-    private transient String localPath;
-    private String gitPath;
+    /**
+     * 文档本地根路径
+     */
+    private transient String localDocPath;
+    /**
+     * git 远程访问地址
+     */
+    private String gitHttpURL;
     // markdown/json/yml
     private String tocType;
     private String token;
@@ -88,21 +94,21 @@ public class Repo {
         return this;
     }
 
-    public String getLocalPath() {
-        return localPath;
+    public String getLocalDocPath() {
+        return localDocPath;
     }
 
-    public Repo setLocalPath(String localPath) {
-        this.localPath = localPath;
+    public Repo setLocalDocPath(String localDocPath) {
+        this.localDocPath = localDocPath;
         return this;
     }
 
-    public String getGitPath() {
-        return gitPath;
+    public String getGitHttpURL() {
+        return gitHttpURL;
     }
 
-    public Repo setGitPath(String gitPath) {
-        this.gitPath = gitPath;
+    public Repo setGitHttpURL(String gitHttpURL) {
+        this.gitHttpURL = gitHttpURL;
         return this;
     }
 

@@ -26,11 +26,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /**
  * 文件操作工具类<br>
@@ -227,6 +234,47 @@ public class FileUtils {
                 sb.append(trimPath(paths[i])).append("/");
             }
             return sb.substring(0, sb.length() - 1);
+        }
+    }
+
+    /**
+     * 解压文件
+     *
+     * @param file      压缩文件
+     * @param targetDir 解压文件输出的目录
+     * @throws IOException
+     */
+    public static void unPacket(Path file, Path targetDir) throws IOException {
+        if (!Files.exists(targetDir)) {
+            Files.createDirectories(targetDir);
+        }
+        ZipFile zipFile = new ZipFile(file.toFile());
+        try {
+            try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(file))) {
+                ZipEntry zipEntry = null;
+                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    String entryName = zipEntry.getName();
+                    Path entryFile = targetDir.resolve(entryName);
+                    if (zipEntry.isDirectory()) {
+                        if (!Files.isDirectory(entryFile)) {
+                            Files.createDirectories(entryFile);
+                        }
+                    } else {
+                        try (InputStream zipEntryInputStream = zipFile.getInputStream(zipEntry)) {
+                            try (OutputStream fileOutputStream = Files.newOutputStream(entryFile, StandardOpenOption.CREATE_NEW)) {
+                                byte[] buffer = new byte[4096];
+                                int length = 0;
+                                while ((length = zipEntryInputStream.read(buffer)) != -1) {
+                                    fileOutputStream.write(buffer, 0, length);
+                                }
+                                fileOutputStream.flush();
+                            }
+                        }
+                    }
+                }
+            }
+        } finally {
+            zipFile.close();
         }
     }
 }

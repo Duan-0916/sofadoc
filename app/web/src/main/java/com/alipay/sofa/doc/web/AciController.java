@@ -12,13 +12,19 @@ import com.alipay.aclinkelib.common.util.JsonUtil;
 import com.alipay.aclinkelib.common.util.ThreadContextUtil;
 import com.alipay.common.tracer.concurrent.TracerRunnable;
 import com.alipay.sofa.boot.util.NamedThreadFactory;
+import com.alipay.sofa.doc.model.SyncRequest;
 import com.alipay.sofa.doc.model.SyncResult;
+import com.alipay.sofa.doc.service.GitService;
 import com.alipay.sofa.doc.service.SyncService;
+import com.alipay.sofa.doc.utils.FileUtils;
 import com.alipay.sofa.doc.utils.NetUtils;
+import com.alipay.sofa.doc.utils.StringUtils;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -62,6 +69,15 @@ public class AciController {
     @Autowired
     private SyncService syncService;
 
+    @Autowired
+    GitService gitService;
+
+    @Value("${sofa.doc.git.doc.root}")
+    String defaultGitDocRoot;
+
+    @Value("${sofa.doc.git.cacheEnable}")
+    boolean cacheEnable = true;
+
     @RequestMapping(value = "v1/rest/sync", method = RequestMethod.POST)
     @ResponseBody
     public APIStringResult doRestSampleSync(HttpServletRequest request,
@@ -84,7 +100,7 @@ public class AciController {
                     ThreadContextUtil.setTask(componentRequest.getExecutionTaskId());
                     LOGGER.info("start sync send request");
 
-                    SyncResult result = syncService.doSync(componentRequest);
+                    SyncResult result = doSync(componentRequest);
                     // 重新组装返回数据信息
                     AntCIComponentRestResponse restResponseV2 = new AntCIComponentRestResponse();
                     restResponseV2.setExecutionTaskId(componentRequest.getExecutionTaskId());
@@ -101,7 +117,7 @@ public class AciController {
                     String postData = JsonUtil.toJson(restResponseV2);
                     final StringEntity postEntity = RestClient.getStringEntity(postData);
                     final String submitResultUrl = componentRequest.getSubmitResultUrl();
-                    LOGGER.info("start sync send request: {}, {}",  JSON.toJSONString(submitResultUrl), JSON.toJSONString(postData));
+                    LOGGER.info("start sync send request: {}, {}", JSON.toJSONString(submitResultUrl), JSON.toJSONString(postData));
                     /* 回调REST接口 */
                     HttpResult httpResult = new RetryRestClient().post(submitResultUrl, postEntity,
                             componentRequest.getSubmitResultHeaders(), true);
@@ -114,5 +130,75 @@ public class AciController {
             }
         });
         return new APIStringResult();
+    }
+
+    /**
+     * 执行同步动作
+     * @param componentRequest
+     * @return
+     */
+    public SyncResult doSync(AntCIComponentRestRequest componentRequest) {
+        SyncRequest syncRequest = null;
+        SyncResult result;
+        try {
+            syncRequest = aciRequestToSyncRequest(componentRequest);
+            result = syncService.doSync(syncRequest);
+        } catch (Exception e) {
+            LOGGER.error("同步异常：" + e.getMessage(), e);
+            result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看后台日志");
+        } finally {
+            String localPath;
+            if (!cacheEnable && syncRequest != null && (localPath = syncRequest.getLocalRepoPath()) != null) {
+                LOGGER.info("remove old directory after sync: {}", localPath);
+                FileUtils.cleanDirectory(new File(localPath));
+            }
+        }
+        return result;
+    }
+
+    private SyncRequest aciRequestToSyncRequest(AntCIComponentRestRequest request) {
+        SyncRequest syncRequest = new SyncRequest();
+
+        try {
+            String yuqueNamespace = request.getInputs().get("yuqueNamespace");
+            Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
+            syncRequest.setYuqueNamespace(yuqueNamespace);
+
+            String gitRepo = request.getInputs().get("gitRepo");
+            String gitDocRoot = request.getInputs().get("gitDocRoot"); // git
+            if (StringUtils.isBlank(gitDocRoot)) {
+                gitDocRoot = defaultGitDocRoot;
+            }
+
+            Assert.notNull(gitRepo, "gitRepo 不能为空");
+            Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
+            syncRequest.setGitHttpURL(gitService.getGitHttpURL(gitRepo));  // 不带.git的地址，用于拼接字符串，例如：http://code.alipay.com/zhanggeng.zg/test-doc
+            syncRequest.setGitDocRoot(gitDocRoot);
+
+            String gitCommitId = request.getInputs().get("gitCommitId");
+            String gitBranch = request.getInputs().get("gitBranch");
+
+            // 0. 下载代码到本地并解析
+            String localRepoPath;
+            try {
+                localRepoPath = gitService.clone(gitRepo, gitBranch, gitCommitId);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to download repo: " + e.getMessage(), e);
+            }
+            syncRequest.setLocalRepoPath(localRepoPath);
+
+            // 可选参数
+            syncRequest.setSyncMode(request.getInputs().get("syncTocMode"));
+            syncRequest.setSlugGenMode(request.getInputs().get("slugGenMode"));
+            syncRequest.setHeader(request.getInputs().get("header"));
+            syncRequest.setFooter(request.getInputs().get("footer"));
+            syncRequest.setYuqueToken(request.getInputs().get("yuqueToken"));
+            syncRequest.setYuqueUser(request.getInputs().get("yuqueUser"));
+
+            return syncRequest;
+        } catch (Exception e) {
+            LOGGER.error("同步异常：" + e.getMessage(), e);
+            throw e;
+        }
     }
 }

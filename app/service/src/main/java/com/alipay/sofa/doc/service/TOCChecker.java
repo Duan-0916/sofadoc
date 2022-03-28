@@ -95,7 +95,7 @@ public class TOCChecker {
             return;
         }
         // 检查文件是否存在
-        File file = new File(repo.getLocalPath(), menuItem.getUrl());
+        File file = new File(repo.getLocalDocPath(), menuItem.getUrl());
         if (!file.exists()) {
             errors.add("[" + url + "] 文件 " + file.getAbsolutePath() + " 不存在，请检查文件名是否正确，或者文件夹名是否正确");
         }
