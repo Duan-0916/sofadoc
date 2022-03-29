@@ -261,6 +261,9 @@ public class FileUtils {
                         }
                     } else {
                         try (InputStream zipEntryInputStream = zipFile.getInputStream(zipEntry)) {
+                            if(!Files.exists(entryFile.getParent())){
+                                Files.createDirectories(entryFile.getParent());
+                            }
                             try (OutputStream fileOutputStream = Files.newOutputStream(entryFile, StandardOpenOption.CREATE_NEW)) {
                                 byte[] buffer = new byte[4096];
                                 int length = 0;
