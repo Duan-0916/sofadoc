@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.alipay.sofa</groupId>
         <artifactId>sofaboot-alipay-dependencies</artifactId>
-        <version>3.8.1</version>
+        <version>3.12.0</version>
     </parent>
     <groupId>com.alipay.sofa</groupId>
     <artifactId>sofa-doc-parent</artifactId>
@@ -35,171 +35,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>2.8.2_nonelookup2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.taobao.notify</groupId>
-                <artifactId>notify-utils</artifactId>
-                <version>2.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-mq</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.taobao.notify</groupId>
-                <artifactId>notify-bolt</artifactId>
-                <version>2.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-isle</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>isle-alipay-sofa-boot-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.system</groupId>
-                <artifactId>alipay-system-event</artifactId>
-                <version>3.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>event-alipay-sofa-boot-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-spi</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-serverless-runtime</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.taobao.notify</groupId>
-                <artifactId>notify-remoting</artifactId>
-                <version>2.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>web-alipay-sofa-boot-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-web</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>antschedulerclient-core</artifactId>
-                <version>1.6.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-rpc</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-log4j2</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.taobao.notify</groupId>
-                <artifactId>notify-tr-client</artifactId>
-                <version>2.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-serverless-runtime-api</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>log4j2-alipay-sofa-boot-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>tracer-alipay-sofa-boot-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-scheduler</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>test-alipay-sofa-boot-core</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-runtime</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.drm</groupId>
-                <artifactId>drm-client</artifactId>
-                <version>4.1.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-logservice</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-ddcs</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>antschedulerclient-registry</artifactId>
-                <version>1.6.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.taobao.notify</groupId>
-                <artifactId>notify-common</artifactId>
-                <version>2.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>rpc-alipay-sofa-boot-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>scheduler-alipay-sofa-boot-starter</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-api</artifactId>
-                <version>3.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-boot-alipay-autoconfigure</artifactId>
-                <version>3.8.2</version>
-            </dependency>
             <dependency>
                 <groupId>com.alipay.sofa</groupId>
                 <artifactId>sofa-doc-bootstrap</artifactId>
@@ -261,6 +96,12 @@
                 <groupId>com.alipay.mist</groupId>
                 <artifactId>mist-sdk</artifactId>
                 <version>1.1.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
