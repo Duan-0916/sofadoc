@@ -29,6 +29,10 @@ public class TOCCheckerTest {
 
         toc.getSubMenuItems().add(new MenuItem().setTitle("ggg").setType(MenuItem.MenuItemType.TITLE).setUrl(""));
         toc.getSubMenuItems().add(new MenuItem().setTitle("baidu").setType(MenuItem.MenuItemType.LINK).setUrl("http://baidu.com"));
+
+        toc.getSubMenuItems().add(new MenuItem().setTitle("").setType(MenuItem.MenuItemType.TITLE).setUrl("ttt.md"));
+        toc.getSubMenuItems().add(new MenuItem().setTitle(" ").setType(MenuItem.MenuItemType.LINK).setUrl("lll.md"));
+        toc.getSubMenuItems().add(new MenuItem().setTitle("\t").setType(MenuItem.MenuItemType.DOC).setUrl("ddd.md"));
         try {
             checker.check(repo, toc, new Context().setSlugGenMode(Context.SlugGenMode.FILENAME));
             Assert.fail();
@@ -37,11 +41,14 @@ public class TOCCheckerTest {
             Assert.assertTrue(e.getMessage().contains("xxx"));
             Assert.assertTrue(e.getMessage().contains("yyy"));
             Assert.assertTrue(e.getMessage().contains("zzz"));
-            Assert.assertFalse(e.getMessage().contains("e1"));
-            Assert.assertFalse(e.getMessage().contains("e2"));
-            Assert.assertFalse(e.getMessage().contains("e3"));
+            Assert.assertTrue(e.getMessage().contains("e1"));
+            Assert.assertTrue(e.getMessage().contains("e2"));
+            Assert.assertTrue(e.getMessage().contains("e3"));
             Assert.assertFalse(e.getMessage().contains("ggg"));
             Assert.assertFalse(e.getMessage().contains("baidu"));
+            Assert.assertTrue(e.getMessage().contains("ttt"));
+            Assert.assertTrue(e.getMessage().contains("lll"));
+            Assert.assertTrue(e.getMessage().contains("ddd"));
         }
     }
 

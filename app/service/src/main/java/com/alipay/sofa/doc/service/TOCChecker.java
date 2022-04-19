@@ -4,6 +4,7 @@ import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.MenuItem;
 import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.model.TOC;
+import com.alipay.sofa.doc.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class TOCChecker {
      *
      * @param repo    语雀知识库
      * @param toc     文档
-     * @param context
+     * @param context 上下文
      */
     public void check(Repo repo, TOC toc, Context context) {
         List<MenuItem> subs = toc.getSubMenuItems();
@@ -78,33 +79,48 @@ public class TOCChecker {
     /**
      * 同步一个文章
      *
-     * @param toc      目标对象
-     * @param context
+     * @param errors   错误列表
+     * @param repo     代码库
+     * @param toc      目录对象
+     * @param context  上下文
      * @param menuItem 目录节点
+     * @param slugs    之前的访问路径集合
      */
     protected void checkMenuItem(List<String> errors, Repo repo, TOC toc, Context context, MenuItem menuItem, Set<String> slugs) {
         Assert.notNull(repo, "repo is null");
         Assert.notNull(toc, "toc is null");
+
+        // 检查标题
+        String title = menuItem.getTitle();
+        String url = menuItem.getUrl();
+        if (StringUtils.isBlank(title)) {
+            errors.add("[" + title + "](" + url + ") 标题不能为空，请检查");
+            return;
+        }
+
+        // 非文档不需要检查 URL
         if (!MenuItem.MenuItemType.DOC.equals(menuItem.getType())) {
             return;
         }
-        // 检查是否符合格式
-        String url = menuItem.getUrl();
+        // 检查 URL 是否符合格式
         if (url.contains("../") || url.contains("./")) {
-            errors.add("[" + url + "] 不能使用 ../ 或者 ./");
+            errors.add("[" + title + "](" + url + ") URL 不能使用 ../ 或者 ./");
             return;
-        }
-        // 检查文件是否存在
-        File file = new File(repo.getLocalDocPath(), menuItem.getUrl());
-        if (!file.exists()) {
-            errors.add("[" + url + "] 文件 " + file.getAbsolutePath() + " 不存在，请检查文件名是否正确，或者文件夹名是否正确");
         }
         String slug = new YuqueSlugGenerator().url2Slug(url, context.getSlugGenMode());
         if (slugs.contains(slug)) {
-            errors.add("[" + url + "] 存在同访问路径，请检查是否存在多个同名文件");
+            errors.add("[" + title + "](" + url + ") URL 存在同访问路径，请检查是否存在多个同名文件");
+            return;
         } else if (!isLegalSlug(slug)) {
-            errors.add("[" + url + "] 生成的 slug [" + slug + "] 不合法（语雀访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点），请检查");
+            errors.add("[" + title + "](" + url + ") URL 生成的 slug [" + slug + "] 不合法（语雀访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点），请检查");
+            return;
         } else {
+            // 检查文件是否存在
+            File file = new File(repo.getLocalDocPath(), url);
+            if (!file.exists()) {
+                errors.add("[" + title + "](" + url + ") URL 所指的文件 " + file.getAbsolutePath() + " 不存在，请检查文件名是否正确，或者文件夹名是否正确");
+                return;
+            }
             slugs.add(slug);
         }
         // TODO: 检查其它文件内容
@@ -115,7 +131,7 @@ public class TOCChecker {
     /**
      * 访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点
      *
-     * @param slug
+     * @param slug 访问路径
      * @return 是否合法
      */
     protected boolean isLegalSlug(String slug) {

@@ -47,7 +47,7 @@ public class UploadController {
     @ResponseBody
     public SyncResult uploadFileHandler(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            LOGGER.info("Zip file " + file.getOriginalFilename() + " is empty.");
+            LOGGER.info("Zip file {} is empty.", file.getOriginalFilename());
             return new SyncResult(false,
                     "Zip file " + file.getOriginalFilename() + " is empty.");
         } else {
