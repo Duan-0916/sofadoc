@@ -2,6 +2,7 @@ package com.alipay.sofa.doc.service;
 
 import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.Doc;
+import com.alipay.sofa.doc.model.Repo;
 import com.alipay.sofa.doc.utils.YuqueClient;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -64,5 +65,27 @@ public class YuqueDocServiceTest {
     @Test
     public void syncWithChild() {
 
+    }
+
+    @Test
+    public void testGenericHeaderAndFooter() {
+        Assert.assertEquals("[⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=https://yuque.antfin.com/a/b/slug&product=test/foo)",
+                            genericHeaderAndFooter("test/foo", "https://yuque.antfin.com/a/b/slug", ""));
+        Assert.assertEquals("[\uD83C\uDFC6 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        [⭐️ 文档打分](https://survey.alibaba-inc.com/apps/zhiliao/ePVYLiA0e?title=https://yuque.antfin.com/a/b/slug&product=middleware/foo)",
+                            genericHeaderAndFooter("middleware/foo", "https://yuque.antfin.com/a/b/slug", ""));
+        Assert.assertEquals("customize",
+                            genericHeaderAndFooter("test/foo", "https://yuque.antfin.com/a/b/slug", "customize"));
+        Assert.assertEquals("customize,url=https://yuque.antfin.com/a/b/slug,name=test/foo",
+                            genericHeaderAndFooter("test/foo", "https://yuque.antfin.com/a/b/slug", "customize,url={0},name={1}"));
+    }
+
+    private String genericHeaderAndFooter(String namespace, String yuqueUrl, String headerOrFooter) {
+        YuqueDocService service = new YuqueDocService();
+        StringBuilder sb = new StringBuilder();
+        service.genericHeaderAndFooter(new Repo().setNamespace(namespace),
+                                       yuqueUrl,
+                                       sb,
+                                       headerOrFooter);
+        return sb.toString();
     }
 }

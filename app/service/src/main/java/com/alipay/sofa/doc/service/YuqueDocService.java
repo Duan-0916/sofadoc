@@ -10,12 +10,14 @@ import com.alipay.sofa.doc.model.TOC;
 import com.alipay.sofa.doc.utils.FileUtils;
 import com.alipay.sofa.doc.utils.StringUtils;
 import com.alipay.sofa.doc.utils.YuqueClient;
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -312,9 +314,10 @@ public class YuqueDocService {
         return path;
     }
 
-    private void genericHeaderAndFooter(Repo repo, String yuqueUrl, StringBuilder content, String headerOrFooter) {
+    @VisibleForTesting
+    protected void genericHeaderAndFooter(Repo repo, String yuqueUrl, StringBuilder content, String headerOrFooter) {
         if (StringUtils.isNotEmpty(headerOrFooter)) {
-            content.append(headerOrFooter);
+            content.append(MessageFormat.format(headerOrFooter, yuqueUrl, repo.getNamespace()));
         } else {
             if (repo.getNamespace().contains("middleware/")) {
                 content.append("[🏆 共建有奖](https://yuque.antfin-inc.com/middleware/improveue/ek95gl)        ");
