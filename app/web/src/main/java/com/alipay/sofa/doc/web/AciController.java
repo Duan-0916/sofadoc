@@ -134,6 +134,7 @@ public class AciController {
 
     /**
      * 执行同步动作
+     *
      * @param componentRequest
      * @return
      */
@@ -145,7 +146,8 @@ public class AciController {
             result = syncService.doSync(syncRequest);
         } catch (Exception e) {
             LOGGER.error("同步异常：" + e.getMessage(), e);
-            result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看后台日志");
+            result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看 " +
+                    "<a href=\"https://yuque.antfin.com/zhanggeng.zg/git-to-yuque/faq\" target=\"_blank\">FAQ</a> 或者后台日志");
         } finally {
             String localPath;
             if (!cacheEnable && syncRequest != null && (localPath = syncRequest.getLocalRepoPath()) != null) {
@@ -165,7 +167,7 @@ public class AciController {
             syncRequest.setYuqueNamespace(yuqueNamespace);
 
             String gitRepo = request.getInputs().get("gitRepo");
-            String gitDocRoot = request.getInputs().get("gitDocRoot"); // git
+            String gitDocRoot = request.getInputs().get("gitDocRoot");
             if (StringUtils.isBlank(gitDocRoot)) {
                 gitDocRoot = defaultGitDocRoot;
             }
@@ -174,6 +176,8 @@ public class AciController {
             Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
             syncRequest.setGitHttpURL(gitService.getGitHttpURL(gitRepo));  // 不带.git的地址，用于拼接字符串，例如：http://code.alipay.com/zhanggeng.zg/test-doc
             syncRequest.setGitDocRoot(gitDocRoot);
+
+            syncRequest.setGitDocToc(request.getInputs().get("gitDocToc"));
 
             String gitCommitId = request.getInputs().get("gitCommitId");
             String gitBranch = request.getInputs().get("gitBranch");

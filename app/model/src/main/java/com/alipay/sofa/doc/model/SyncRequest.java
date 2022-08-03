@@ -49,6 +49,10 @@ public class SyncRequest {
      */
     String gitDocRoot;
     /**
+     * 文档目录的文件名，默认 "SUMMARY.md"
+     */
+    String gitDocToc;
+    /**
      * 文档所在 git 库的 http 访问路径
      * https://code.alipay.com/zhanggeng.zg/test-doc
      */
@@ -249,6 +253,15 @@ public class SyncRequest {
 
     public SyncRequest setGitHttpURL(String gitHttpURL) {
         this.gitHttpURL = gitHttpURL;
+        return this;
+    }
+
+    public String getGitDocToc() {
+        return gitDocToc;
+    }
+
+    public SyncRequest setGitDocToc(String gitDocToc) {
+        this.gitDocToc = gitDocToc;
         return this;
     }
 }
