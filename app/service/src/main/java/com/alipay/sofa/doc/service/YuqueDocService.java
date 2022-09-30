@@ -73,7 +73,7 @@ public class YuqueDocService {
 
             YuqueSlugGenerator generator = new YuqueSlugGenerator();
             // 拼接，放回
-            String slug = generator.url2Slug(url, context.getSlugGenMode());
+            String slug = generator.url2Slug(url, context);
             menuItem.setSlug(slug);
 
             long start = System.currentTimeMillis();

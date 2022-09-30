@@ -1,13 +1,36 @@
 package com.alipay.sofa.doc.service;
 
 import com.alipay.sofa.doc.model.Context;
+import com.alipay.sofa.doc.utils.StringUtils;
+
+import java.util.Locale;
 
 /**
  * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
  */
 public class YuqueSlugGenerator {
 
-    public String url2Slug(String url, Context.SlugGenMode mode) {
+    /**
+     *
+     * @param url 原生地址
+     * @param context 上下文
+     * @return 语雀 slug
+     */
+    public String url2Slug(String url, Context context) {
+        Context.SlugGenMode mode = context.getSlugGenMode();
+        String slug = url2Slug(url, mode);
+        String prefix = context.getSlugPrefix();
+        if(StringUtils.isNotBlank(prefix)){
+            slug = prefix.trim().toLowerCase(Locale.ROOT) + "-" + slug;
+        }
+        String suffix = context.getSlugSuffix();
+        if(StringUtils.isNotBlank(suffix)){
+            slug = slug + "-" + suffix.trim().toLowerCase(Locale.ROOT);
+        }
+        return slug;
+    }
+
+    String url2Slug(String url, Context.SlugGenMode mode) {
         if (mode == Context.SlugGenMode.FILENAME) {
             return url2SlugByFileName(url);
         } else if (mode == Context.SlugGenMode.DIRS_FILENAME) {

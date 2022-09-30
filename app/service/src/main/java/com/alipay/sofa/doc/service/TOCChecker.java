@@ -107,7 +107,7 @@ public class TOCChecker {
             errors.add("[" + title + "](" + url + ") URL 不能使用 ../ 或者 ./");
             return;
         }
-        String slug = new YuqueSlugGenerator().url2Slug(url, context.getSlugGenMode());
+        String slug = new YuqueSlugGenerator().url2Slug(url, context);
         if (slugs.contains(slug)) {
             errors.add("[" + title + "](" + url + ") URL 存在同访问路径，请检查是否存在多个同名文件");
             return;

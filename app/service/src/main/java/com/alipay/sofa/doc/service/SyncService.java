@@ -110,6 +110,7 @@ public class SyncService {
                     .setTocFile(request.getGitDocToc());
 
             Context context = new Context().setSyncMode(syncTocMode).setSlugGenMode(slugGenMode)
+                    .setSlugPrefix(request.getSlugPrefix()).setSlugSuffix(request.getSlugSuffix())
                     .setHeader(header).setFooter(footer).setGitDocRoot(gitDocRoot);
 
             // 1. 解析本地目录
