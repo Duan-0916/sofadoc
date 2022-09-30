@@ -32,6 +32,14 @@ public class SyncRequest {
      */
     String slugGenMode;
     /**
+     * 语雀 slug 前缀，使用生成模式字段生成 slug 后，还会追加 前缀-，默认空
+     */
+    String slugPrefix;
+    /**
+     * 语雀 slug 后缀，使用生成模式字段生成 slug 后，还会追加 -后缀，默认空
+     */
+    String slugSuffix;
+    /**
      * 自定义页眉
      */
     String header;
@@ -48,6 +56,10 @@ public class SyncRequest {
      * 文档所在文件夹的相对路径，默认 repo 的根目录 ./
      */
     String gitDocRoot;
+    /**
+     * 文档目录的文件名，默认 "SUMMARY.md"
+     */
+    String gitDocToc;
     /**
      * 文档所在 git 库的 http 访问路径
      * https://code.alipay.com/zhanggeng.zg/test-doc
@@ -249,6 +261,33 @@ public class SyncRequest {
 
     public SyncRequest setGitHttpURL(String gitHttpURL) {
         this.gitHttpURL = gitHttpURL;
+        return this;
+    }
+
+    public String getGitDocToc() {
+        return gitDocToc;
+    }
+
+    public SyncRequest setGitDocToc(String gitDocToc) {
+        this.gitDocToc = gitDocToc;
+        return this;
+    }
+
+    public String getSlugPrefix() {
+        return slugPrefix;
+    }
+
+    public SyncRequest setSlugPrefix(String slugPrefix) {
+        this.slugPrefix = slugPrefix;
+        return this;
+    }
+
+    public String getSlugSuffix() {
+        return slugSuffix;
+    }
+
+    public SyncRequest setSlugSuffix(String slugSuffix) {
+        this.slugSuffix = slugSuffix;
         return this;
     }
 }

@@ -10,7 +10,6 @@ public class Repo {
     private String slug;
     private String name;
     private String description;
-    private String tocYml;
     /**
      * 站点：https://yuque.antfin.com/
      */
@@ -27,8 +26,14 @@ public class Repo {
      * git 远程访问地址
      */
     private String gitHttpURL;
-    // markdown/json/yml
+    /**
+     * toc 类型：markdown/json/yml
+     */
     private String tocType;
+    /**
+     * toc 文件地址
+     */
+    private String tocFile;
     private String token;
 
     public int getId() {
@@ -73,15 +78,6 @@ public class Repo {
 
     public Repo setDescription(String description) {
         this.description = description;
-        return this;
-    }
-
-    public String getTocYml() {
-        return tocYml;
-    }
-
-    public Repo setTocYml(String tocYml) {
-        this.tocYml = tocYml;
         return this;
     }
 
@@ -137,5 +133,14 @@ public class Repo {
 
     public String getSite() {
         return site;
+    }
+
+    public String getTocFile() {
+        return tocFile;
+    }
+
+    public Repo setTocFile(String tocFile) {
+        this.tocFile = tocFile;
+        return this;
     }
 }

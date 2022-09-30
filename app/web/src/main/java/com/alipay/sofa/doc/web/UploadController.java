@@ -52,6 +52,8 @@ public class UploadController {
                     "Zip file " + file.getOriginalFilename() + " is empty.");
         } else {
             DefaultMultipartHttpServletRequest servletRequest = (DefaultMultipartHttpServletRequest) request;
+            LOGGER.info("Receive upload request, file: {}", file.getOriginalFilename());
+
             SyncRequest syncRequest = new SyncRequest();
             try {
                 String yuqueNamespace = servletRequest.getParameter("yuqueNamespace");
@@ -69,6 +71,7 @@ public class UploadController {
                 syncRequest.setGitHttpURL(gitService.getGitHttpURL(gitRepo));  // 不带.git的地址，用于拼接字符串，例如：http://code.alipay.com/zhanggeng.zg/test-doc
                 syncRequest.setGitDocRoot(gitDocRoot);
 
+                syncRequest.setGitDocToc(servletRequest.getParameter("gitDocToc"));
             } catch (Exception e) {
                 LOGGER.error("同步异常：" + e.getMessage(), e);
                 return new SyncResult(false, e.getMessage());
