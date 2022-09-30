@@ -32,7 +32,7 @@ public class SyncRequest {
      */
     String slugGenMode;
     /**
-     * 语雀 slug 前缀，使用生成模式字段生成 slug 后，还会追加 -前缀，默认空
+     * 语雀 slug 前缀，使用生成模式字段生成 slug 后，还会追加 前缀-，默认空
      */
     String slugPrefix;
     /**
