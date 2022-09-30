@@ -32,6 +32,14 @@ public class SyncRequest {
      */
     String slugGenMode;
     /**
+     * 语雀 slug 前缀，使用生成模式字段生成 slug 后，还会追加 -前缀，默认空
+     */
+    String slugPrefix;
+    /**
+     * 语雀 slug 后缀，使用生成模式字段生成 slug 后，还会追加 -后缀，默认空
+     */
+    String slugSuffix;
+    /**
      * 自定义页眉
      */
     String header;
@@ -262,6 +270,24 @@ public class SyncRequest {
 
     public SyncRequest setGitDocToc(String gitDocToc) {
         this.gitDocToc = gitDocToc;
+        return this;
+    }
+
+    public String getSlugPrefix() {
+        return slugPrefix;
+    }
+
+    public SyncRequest setSlugPrefix(String slugPrefix) {
+        this.slugPrefix = slugPrefix;
+        return this;
+    }
+
+    public String getSlugSuffix() {
+        return slugSuffix;
+    }
+
+    public SyncRequest setSlugSuffix(String slugSuffix) {
+        this.slugSuffix = slugSuffix;
         return this;
     }
 }
