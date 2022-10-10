@@ -106,9 +106,11 @@ public class SyncService {
                     .setNamespace(yuqueNamespace)
                     .setLocalDocPath(FileUtils.contactPath(gitRepo, gitDocRoot)) // 下载代码到本地的地址
                     .setGitHttpURL(request.getGitHttpURL()) // 不带.git的地址，用于拼接字符串
-                    .setTocType("markdown");
+                    .setTocType("markdown")
+                    .setTocFile(request.getGitDocToc());
 
             Context context = new Context().setSyncMode(syncTocMode).setSlugGenMode(slugGenMode)
+                    .setSlugPrefix(request.getSlugPrefix()).setSlugSuffix(request.getSlugSuffix())
                     .setHeader(header).setFooter(footer).setGitDocRoot(gitDocRoot);
 
             // 1. 解析本地目录
@@ -128,7 +130,8 @@ public class SyncService {
             result = new SyncResult(true, "同步成功！ 请访问 <a href=\""
                     + url + "\" target=\"_blank\" >" + url + "</a> 查看最新文档！");
         } catch (Exception e) {
-            result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看后台日志");
+            result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看 " +
+                    "<a href=\"https://yuque.antfin.com/zhanggeng.zg/git-to-yuque/faq\" target=\"_blank\">FAQ</a> 或者后台日志");
             LOGGER.error("同步异常：" + e.getMessage(), e);
         }
         return result;

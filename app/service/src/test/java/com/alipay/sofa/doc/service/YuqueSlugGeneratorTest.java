@@ -1,5 +1,6 @@
 package com.alipay.sofa.doc.service;
 
+import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.Context.SlugGenMode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +24,20 @@ public class YuqueSlugGeneratorTest {
         Assert.assertEquals("c", service.url2Slug("/aa/b-b/c.md", SlugGenMode.FILENAME));
     }
 
+    @Test
+    public void getSlugPrefixAndSuffix() {
+        YuqueSlugGenerator service = new YuqueSlugGenerator();
+        Assert.assertEquals("aaa-xxx", service.url2Slug("XXX",
+                new Context().setSlugGenMode(SlugGenMode.FILENAME).setSlugPrefix("aaa")));
+        Assert.assertEquals("xxx-bbb", service.url2Slug("XXX",
+                new Context().setSlugGenMode(SlugGenMode.FILENAME).setSlugSuffix("bbb")));
+        Assert.assertEquals("aaa-xxx-bbb", service.url2Slug("XXX",
+                new Context().setSlugGenMode(SlugGenMode.FILENAME).setSlugPrefix("aaa").setSlugSuffix("bbb")));
+        Assert.assertEquals("aaa-xxx-bbb", service.url2Slug("XXX",
+                new Context().setSlugGenMode(SlugGenMode.FILENAME).setSlugPrefix("aaa ").setSlugSuffix(" bbb")));
+        Assert.assertEquals("aaa-xxx-bbb", service.url2Slug("XXX",
+                new Context().setSlugGenMode(SlugGenMode.FILENAME).setSlugPrefix("AaA").setSlugSuffix("BbB")));
+    }
 
     @Test
     public void getSlug() {

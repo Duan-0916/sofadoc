@@ -9,6 +9,10 @@ public class Context {
 
     private SlugGenMode slugGenMode = SlugGenMode.FILENAME;
 
+    private String slugPrefix;
+
+    private String slugSuffix;
+
     private String header;
 
     private String footer;
@@ -57,6 +61,24 @@ public class Context {
 
     public Context setGitDocRoot(String gitDocRoot) {
         this.gitDocRoot = gitDocRoot;
+        return this;
+    }
+
+    public String getSlugPrefix() {
+        return slugPrefix;
+    }
+
+    public Context setSlugPrefix(String slugPrefix) {
+        this.slugPrefix = slugPrefix;
+        return this;
+    }
+
+    public String getSlugSuffix() {
+        return slugSuffix;
+    }
+
+    public Context setSlugSuffix(String slugSuffix) {
+        this.slugSuffix = slugSuffix;
         return this;
     }
 

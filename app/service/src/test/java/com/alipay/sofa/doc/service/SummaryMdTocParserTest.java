@@ -28,6 +28,17 @@ public class SummaryMdTocParserTest {
         Assert.assertEquals(2, toc.getSubMenuItems().get(0).getSubMenuItems().size());
     }
 
+    @Test
+    public void testParseWithFileName() throws IOException {
+        String localPath = SummaryMdTocParserTest.class.getResource("/toc").getPath();
+        Repo repo = new Repo().setNamespace("xxx").setLocalDocPath(localPath).setTocFile("AnotherSummary.md");
+        Context context = new Context().setSyncMode(Context.SyncMode.MERGE);
+        TOC toc = parser.parse(repo, context);
+
+        Assert.assertEquals(2, toc.getSubMenuItems().size());
+        Assert.assertEquals(1, toc.getSubMenuItems().get(1).getSubMenuItems().size());
+    }
+
     @Test(expected = RuntimeException.class)
     public void testparseError1() throws IOException {
         Repo repo = new Repo().setLocalDocPath("xxx");

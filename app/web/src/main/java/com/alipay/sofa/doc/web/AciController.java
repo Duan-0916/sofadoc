@@ -134,6 +134,7 @@ public class AciController {
 
     /**
      * 执行同步动作
+     *
      * @param componentRequest
      * @return
      */
@@ -145,7 +146,8 @@ public class AciController {
             result = syncService.doSync(syncRequest);
         } catch (Exception e) {
             LOGGER.error("同步异常：" + e.getMessage(), e);
-            result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看后台日志");
+            result = new SyncResult(false, "同步异常！ 简单原因为：" + e.getMessage() + "，更多请查看 " +
+                    "<a href=\"https://yuque.antfin.com/zhanggeng.zg/git-to-yuque/faq\" target=\"_blank\">FAQ</a> 或者后台日志");
         } finally {
             String localPath;
             if (!cacheEnable && syncRequest != null && (localPath = syncRequest.getLocalRepoPath()) != null) {
@@ -160,12 +162,13 @@ public class AciController {
         SyncRequest syncRequest = new SyncRequest();
 
         try {
-            String yuqueNamespace = request.getInputs().get("yuqueNamespace");
+            Map<String, String> inputs = request.getInputs();
+            String yuqueNamespace = inputs.get("yuqueNamespace");
             Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
             syncRequest.setYuqueNamespace(yuqueNamespace);
 
-            String gitRepo = request.getInputs().get("gitRepo");
-            String gitDocRoot = request.getInputs().get("gitDocRoot"); // git
+            String gitRepo = inputs.get("gitRepo");
+            String gitDocRoot = inputs.get("gitDocRoot");
             if (StringUtils.isBlank(gitDocRoot)) {
                 gitDocRoot = defaultGitDocRoot;
             }
@@ -175,8 +178,10 @@ public class AciController {
             syncRequest.setGitHttpURL(gitService.getGitHttpURL(gitRepo));  // 不带.git的地址，用于拼接字符串，例如：http://code.alipay.com/zhanggeng.zg/test-doc
             syncRequest.setGitDocRoot(gitDocRoot);
 
-            String gitCommitId = request.getInputs().get("gitCommitId");
-            String gitBranch = request.getInputs().get("gitBranch");
+            syncRequest.setGitDocToc(inputs.get("gitDocToc"));
+
+            String gitCommitId = inputs.get("gitCommitId");
+            String gitBranch = inputs.get("gitBranch");
 
             // 0. 下载代码到本地并解析
             String localRepoPath;
@@ -188,12 +193,14 @@ public class AciController {
             syncRequest.setLocalRepoPath(localRepoPath);
 
             // 可选参数
-            syncRequest.setSyncMode(request.getInputs().get("syncTocMode"));
-            syncRequest.setSlugGenMode(request.getInputs().get("slugGenMode"));
-            syncRequest.setHeader(request.getInputs().get("header"));
-            syncRequest.setFooter(request.getInputs().get("footer"));
-            syncRequest.setYuqueToken(request.getInputs().get("yuqueToken"));
-            syncRequest.setYuqueUser(request.getInputs().get("yuqueUser"));
+            syncRequest.setSyncMode(inputs.get("syncTocMode"));
+            syncRequest.setSlugGenMode(inputs.get("slugGenMode"));
+            syncRequest.setSlugPrefix(inputs.get("slugPrefix"));
+            syncRequest.setSlugSuffix(inputs.get("slugSuffix"));
+            syncRequest.setHeader(inputs.get("header"));
+            syncRequest.setFooter(inputs.get("footer"));
+            syncRequest.setYuqueToken(inputs.get("yuqueToken"));
+            syncRequest.setYuqueUser(inputs.get("yuqueUser"));
 
             return syncRequest;
         } catch (Exception e) {
