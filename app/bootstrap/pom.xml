@@ -57,6 +57,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.alipay.sofa</groupId>
+                        <artifactId>sofa-boot-alipay-loader-tools</artifactId>
+                        <version>3.17.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
