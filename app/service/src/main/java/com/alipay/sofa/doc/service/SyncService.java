@@ -38,9 +38,6 @@ public class SyncService {
 
     public static final String DEFAULT_YUQUE_SITE = "https://yuque.antfin.com/";
 
-    @Value("${sofa.doc.yuque.uesr}")
-    String defaultYuequeUser;
-
     @Value("${sofa.doc.syncTocMode}")
     String defaultSyncTocMode;
 
@@ -67,12 +64,11 @@ public class SyncService {
             if (StringUtils.isBlank(yuqueToken)) {
                 String yuqueUser = request.getYuqueUser();
                 if (StringUtils.isBlank(yuqueUser)) {
-                    yuqueUser = defaultYuequeUser;
+                    yuqueUser = StringUtils.substringBefore(yuqueNamespace, "/"); //团队账号
                 }
                 yuqueToken = tokenService.getTokenByUser(yuqueUser);
             }
-            Assert.notNull(yuqueToken, "yuqueToken 不能为空，请添加「蚂蚁集团中间件」为语雀成员，" +
-                    "或在 aci.yml 里配置 yuqueToken，或在 aci.yml 里配置 yuqueUser 并联系管理员托管 token。");
+            Assert.notNull(yuqueToken, "yuqueUser或yuqueToken未配置，请申请语雀团队 Token 并联系管理员进行配置");
 
             Context.SyncMode syncTocMode;
             String syncTocStr = request.getSyncMode();

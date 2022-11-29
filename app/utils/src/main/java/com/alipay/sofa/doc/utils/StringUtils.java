@@ -397,14 +397,14 @@ public class StringUtils {
      * 如果字符串为<code>null</code>，则返回<code>null</code>。 如果分隔子串为<code>null</code>或未找到该子串，则返回原字符串。
      * </p>
      * <pre>
-     * StringUtil.substringAfter(null, *)      = null
-     * StringUtil.substringAfter("", *)        = ""
-     * StringUtil.substringAfter(*, null)      = ""
-     * StringUtil.substringAfter("abc", "a")   = "bc"
-     * StringUtil.substringAfter("abcba", "b") = "cba"
-     * StringUtil.substringAfter("abc", "c")   = ""
-     * StringUtil.substringAfter("abc", "d")   = ""
-     * StringUtil.substringAfter("abc", "")    = "abc"
+     * StringUtils.substringAfter(null, *)      = null
+     * StringUtils.substringAfter("", *)        = ""
+     * StringUtils.substringAfter(*, null)      = ""
+     * StringUtils.substringAfter("abc", "a")   = "bc"
+     * StringUtils.substringAfter("abcba", "b") = "cba"
+     * StringUtils.substringAfter("abc", "c")   = ""
+     * StringUtils.substringAfter("abc", "d")   = ""
+     * StringUtils.substringAfter("abc", "")    = "abc"
      * </pre>
      *
      * @param str       字符串
@@ -412,10 +412,10 @@ public class StringUtils {
      * @return 子串，如果原始串为<code>null</code>，则返回<code>null</code>
      */
     public static String substringAfter(String str, String separator) {
-        if ((str == null) || (str.length() == 0)) {
+        if (isEmpty(str)) {
             return str;
         }
-        if (separator == null) {
+        if (isEmpty(separator)) {
             return EMPTY;
         }
         int pos = str.indexOf(separator);
@@ -423,5 +423,38 @@ public class StringUtils {
             return EMPTY;
         }
         return str.substring(pos + separator.length());
+    }
+
+    /**
+     * <p>取得第一个出现的分隔子串之后的子串。
+     * 如果字符串为<code>null</code>，则返回<code>null</code>。 如果分隔子串为<code>null</code>或未找到该子串，则返回原字符串。
+     * </p>
+     * <pre>
+     * StringUtils.substringBefore(null, *)      = null
+     * StringUtils.substringBefore("", *)        = ""
+     * StringUtils.substringBefore(*, null)      = ""
+     * StringUtils.substringBefore("abc", "b")   = "a"
+     * StringUtils.substringBefore("abcba", "c") = "ab"
+     * StringUtils.substringBefore("abc", "a")   = ""
+     * StringUtils.substringBefore("abc", "d")   = ""
+     * StringUtils.substringBefore("abc", "")    = "abc"
+     * </pre>
+     *
+     * @param str       字符串
+     * @param separator 要搜索的分隔子串
+     * @return 子串，如果原始串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String substringBefore(String str, String separator) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        if (isEmpty(separator)) {
+            return EMPTY;
+        }
+        int pos = str.indexOf(separator);
+        if (pos < 0) {
+            return EMPTY;
+        }
+        return str.substring(0, pos);
     }
 }

@@ -1,6 +1,7 @@
 package com.alipay.sofa.doc.service;
 
 import com.alipay.mist.sdk.MistClient;
+import com.alipay.sofa.doc.integration.drm.YuqueTokenDrm;
 import com.alipay.sofa.doc.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,9 @@ public class TokenService {
     @Autowired(required = false)
     MistClient mistClient;
 
+    @Autowired(required = false)
+    private YuqueTokenDrm yuqueTokenDrm;
+
     @Value("${sofa.doc.yuque.token:}")
     String defaultYuqueToken;
 
@@ -25,13 +29,21 @@ public class TokenService {
      * @return yuque token
      */
     public String getTokenByUser(String yuqueUser) {
+        // 优先从 drm 里取
+        String token = null;
+        if (yuqueTokenDrm != null) {
+            token = yuqueTokenDrm.getTokenByUser(yuqueUser);
+            if (StringUtils.isNotBlank(token)) {
+                return token;
+            }
+        }
+        // 再从 mist 里取
         if (mistClient != null) {
             if (StringUtils.isNotEmpty(yuqueUser)) {
                 return mistClient.getSecret("other_manual_sofadoc_" + yuqueUser);
             }
             throw new IllegalArgumentException("yuqueUser is null, please add user info in secretmng.");
-        } else {
-            return defaultYuqueToken;
         }
+        return defaultYuqueToken;
     }
 }

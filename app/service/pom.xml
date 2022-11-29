@@ -33,8 +33,11 @@
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alipay.sofa</groupId>
+            <artifactId>sofa-doc-intergration</artifactId>
+        </dependency>
 
-        
     </dependencies>
 
 </project>

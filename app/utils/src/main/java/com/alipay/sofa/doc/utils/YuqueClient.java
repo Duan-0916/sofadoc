@@ -53,6 +53,7 @@ public class YuqueClient {
         try {
             CloseableHttpClient httpclient = HttpClientBuilder.create().build();
             url = buildUrl(url);
+            LOGGER.info("POST {}", url);
             HttpPost httpost = new HttpPost(url);
             RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
             httpost.setConfig(defaultConfig);
@@ -83,6 +84,7 @@ public class YuqueClient {
         try {
             CloseableHttpClient httpclient = HttpClientBuilder.create().build();
             url = buildUrl(url);
+            LOGGER.info("PUT {}", url);
             HttpPut httpPut = new HttpPut(url);
             RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
             httpPut.setConfig(defaultConfig);
@@ -111,6 +113,7 @@ public class YuqueClient {
         try {
             CloseableHttpClient httpclient = HttpClientBuilder.create().build();
             url = buildUrl(url);
+            LOGGER.info("GET {}", url);
             HttpGet httpGet = new HttpGet(url);
             RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
             httpGet.setConfig(defaultConfig);
@@ -131,6 +134,7 @@ public class YuqueClient {
         try {
             CloseableHttpClient httpclient = HttpClientBuilder.create().build();
             url = buildUrl(url);
+            LOGGER.info("DELETE {}", url);
             HttpDelete httpDelete = new HttpDelete(url);
             RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
             httpDelete.setConfig(defaultConfig);
