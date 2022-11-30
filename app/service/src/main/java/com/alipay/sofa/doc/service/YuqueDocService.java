@@ -2,6 +2,7 @@ package com.alipay.sofa.doc.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.sofa.doc.integration.drm.SyncDrm;
 import com.alipay.sofa.doc.model.Context;
 import com.alipay.sofa.doc.model.Doc;
 import com.alipay.sofa.doc.model.MenuItem;
@@ -10,9 +11,11 @@ import com.alipay.sofa.doc.model.TOC;
 import com.alipay.sofa.doc.utils.FileUtils;
 import com.alipay.sofa.doc.utils.StringUtils;
 import com.alipay.sofa.doc.utils.YuqueClient;
+import com.alipay.sofa.doc.utils.YuqueConstants;
 import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -29,6 +32,9 @@ import java.util.Map;
 public class YuqueDocService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(YuqueDocService.class);
+
+    @Autowired
+    SyncDrm syncDrm;
 
     /**
      * 同步整个目录对应的文档
@@ -92,10 +98,10 @@ public class YuqueDocService {
                 doc.setBody(newContent);
                 update(client, namespace, doc);
             }
-            try { // TODO 语雀 API 限流，先用 Sleep，后续改成增量同步
+            try {
                 long elapsed = System.currentTimeMillis() - start;
-                if (elapsed < 150) {
-                    Thread.sleep(150 - elapsed);
+                if (elapsed < syncDrm.getSyncDocSleepTime()) {
+                    Thread.sleep(syncDrm.getSyncDocSleepTime() - elapsed);
                 }
             } catch (InterruptedException e) {
                 // NOPMD
@@ -205,7 +211,11 @@ public class YuqueDocService {
         if (data == null) {
             // 更新不成功
             LOGGER.error("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
-            throw new RuntimeException("更新语雀文档失败，请检查文档和知识库是否存在或者当前同步用户有知识库操作权限");
+            if(json.contains(YuqueConstants.HTTP_API_CODE_OVERLOAD)){
+                throw new RuntimeException("更新语雀文档失败，当前账号已经超过语雀 API 使用次数限制，请稍后再试");
+            } else {
+                throw new RuntimeException("更新语雀文档失败，请检查文档和知识库是否存在或者当前同步用户有知识库操作权限");
+            }
         }
     }
 

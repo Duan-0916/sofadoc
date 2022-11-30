@@ -30,6 +30,16 @@
                 <DefaultRolloverStrategy/>
             </RollingFile>
 
+            <RollingFile name="APP-UTILS-APPENDER" fileName="${ctx:logging.path}/${ctx:spring.application.name}/app-utils.log"
+                         filePattern="${ctx:logging.path}/${ctx:spring.application.name}/app-default.log.%d{yyyy-MM-dd}"
+                         append="true">
+                <PatternLayout
+                        pattern="%d [%X{traceId} %X{rpcId} - %X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - %m%n%throwable"
+                        charset="UTF-8"/>
+                <TimeBasedTriggeringPolicy/>
+                <DefaultRolloverStrategy/>
+            </RollingFile>
+
             <RollingFile name="SPRING-APPENDER" fileName="${ctx:logging.path}/spring/spring.log"
                          filePattern="${ctx:logging.path}/spring/spring.log.%d{yyyy-MM-dd}"
                          append="true">
@@ -64,6 +74,10 @@
                 <AppenderRef ref="NO-USAGE-APPENDER"/>
             </AsyncLogger>
 
+            <AsyncLogger name="com.taobao.remoting" additivity="false" level="${ctx:logging.level.com.alipay.sofa.doc}">
+                <AppenderRef ref="NO-USAGE-APPENDER"/>
+            </AsyncLogger>
+
             <AsyncLogger name="com.taobao.vipserver" additivity="false" level="${ctx:logging.level.com.alipay.sofa.doc}">
                 <AppenderRef ref="NO-USAGE-APPENDER"/>
             </AsyncLogger>
@@ -78,6 +92,11 @@
                 <AppenderRef ref="APP-DEFAULT-APPENDER"/>
                 <AppenderRef ref="ERROR-APPENDER"/>
                 <AppenderRef ref="STDOUT-APPENDER"/>
+            </AsyncLogger>
+
+            <AsyncLogger name="com.alipay.sofa.doc.utils" additivity="false" level="${ctx:logging.level.com.alipay.sofa.doc}">
+                <AppenderRef ref="APP-UTILS-APPENDER"/>
+                <AppenderRef ref="ERROR-APPENDER"/>
             </AsyncLogger>
 
             <AsyncLogger name="org.springframework" additivity="false" level="${ctx:logging.level.com.alipay.sofa.doc}">
