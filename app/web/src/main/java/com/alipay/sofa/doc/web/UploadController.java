@@ -106,6 +106,7 @@ public class UploadController {
             syncRequest.setFooter(servletRequest.getParameter("footer"));
             syncRequest.setYuqueToken(servletRequest.getParameter("yuqueToken"));
             syncRequest.setYuqueUser(servletRequest.getParameter("yuqueUser"));
+            syncRequest.setYuqueSite(servletRequest.getParameter("yuqueSite"));
 
             SyncResult result;
             try {

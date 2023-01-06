@@ -178,7 +178,11 @@ public class YuqueDocService {
         if (data == null) {
             // 创建不成功
             LOGGER.error("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
-            throw new RuntimeException("新增语雀文档失败，请检查知识库是否存在或者当前同步用户有知识库操作权限");
+            if (json.contains(YuqueConstants.HTTP_API_CODE_OVERLOAD)) {
+                throw new RuntimeException("新增语雀文档失败，当前账号已经超过语雀 API 使用次数限制，请稍后再试");
+            } else {
+                throw new RuntimeException("新增语雀文档失败，请检查文档和知识库是否存在或者当前同步用户有知识库操作权限");
+            }
         } else {
             doc.setId(data.getInteger("id"));
         }
@@ -210,8 +214,8 @@ public class YuqueDocService {
         JSONObject data = res.getJSONObject("data");
         if (data == null) {
             // 更新不成功
-            LOGGER.error("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
-            if(json.contains(YuqueConstants.HTTP_API_CODE_OVERLOAD)){
+            LOGGER.error("Failed to update doc: " + doc.getTitle() + ", response data is : " + json);
+            if (json.contains(YuqueConstants.HTTP_API_CODE_OVERLOAD)) {
                 throw new RuntimeException("更新语雀文档失败，当前账号已经超过语雀 API 使用次数限制，请稍后再试");
             } else {
                 throw new RuntimeException("更新语雀文档失败，请检查文档和知识库是否存在或者当前同步用户有知识库操作权限");
@@ -299,7 +303,7 @@ public class YuqueDocService {
     }
 
     /**
-     * @param context 上下文，包括同步路径，例如 / 和  /doc
+     * @param context  上下文，包括同步路径，例如 / 和  /doc
      * @param filePath 文件路径
      * @return 同步路径 + 文件路径
      */
