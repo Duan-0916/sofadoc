@@ -1,8 +1,11 @@
 package com.alipay.sofa.doc.service;
 
 import com.alipay.mist.sdk.MistClient;
+import com.alipay.mist.utils.MistSDKException;
 import com.alipay.sofa.doc.integration.drm.YuqueTokenDrm;
 import com.alipay.sofa.doc.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TokenService {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
 
     @Autowired(required = false)
     MistClient mistClient;
@@ -40,7 +45,11 @@ public class TokenService {
         // 再从 mist 里取
         if (mistClient != null) {
             if (StringUtils.isNotEmpty(yuqueUser)) {
-                return mistClient.getSecret("other_manual_sofadoc_" + yuqueUser);
+                try {
+                    return mistClient.getSecret("other_manual_sofadoc_" + yuqueUser);
+                } catch (MistSDKException e) {
+                    LOGGER.error("Query token from mist error!", e);
+                }
             }
             throw new IllegalArgumentException("yuqueUser is null, please add user info in secretmng.");
         }
