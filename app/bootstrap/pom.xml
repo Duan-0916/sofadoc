@@ -25,6 +25,11 @@
             <artifactId>sofa-doc-service</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.alipay.security</groupId>
+            <artifactId>alipay-security-core</artifactId>
+            <version>0.0.16</version>
+        </dependency>
+        <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>sofa-doc-web</artifactId>
         </dependency>
