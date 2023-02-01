@@ -48,10 +48,11 @@ public class TokenService {
                 try {
                     return mistClient.getSecret("other_manual_sofadoc_" + yuqueUser);
                 } catch (MistSDKException e) {
-                    LOGGER.error("Query token from mist error!", e);
+                    LOGGER.error("Query token of " + yuqueUser + " from mist error!", e);
                 }
+            } else {
+                throw new IllegalArgumentException("yuqueUser is null, please add user info in secretmng.");
             }
-            throw new IllegalArgumentException("yuqueUser is null, please add user info in secretmng.");
         }
         return defaultYuqueToken;
     }
