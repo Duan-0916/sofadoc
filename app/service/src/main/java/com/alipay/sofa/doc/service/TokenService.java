@@ -34,24 +34,23 @@ public class TokenService {
      * @return yuque token
      */
     public String getTokenByUser(String yuqueUser) {
-        // 优先从 drm 里取
         String token = null;
-        if (yuqueTokenDrm != null) {
-            token = yuqueTokenDrm.getTokenByUser(yuqueUser);
-            if (StringUtils.isNotBlank(token)) {
-                return token;
+        if (StringUtils.isNotEmpty(yuqueUser)) {
+            // 优先从 drm 里取
+            if (yuqueTokenDrm != null) {
+                token = yuqueTokenDrm.getTokenByUser(yuqueUser);
+                if (StringUtils.isNotBlank(token)) {
+                    return token;
+                }
             }
-        }
-        // 再从 mist 里取
-        if (mistClient != null) {
-            if (StringUtils.isNotEmpty(yuqueUser)) {
+            // 再从 mist 里取
+            if (mistClient != null) {
                 try {
                     return mistClient.getSecret("other_manual_sofadoc_" + yuqueUser);
                 } catch (MistSDKException e) {
-                    LOGGER.error("Query token from mist error!", e);
+                    LOGGER.error("Query token of " + yuqueUser + " from mist error!", e);
                 }
             }
-            throw new IllegalArgumentException("yuqueUser is null, please add user info in secretmng.");
         }
         return defaultYuqueToken;
     }

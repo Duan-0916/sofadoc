@@ -158,7 +158,7 @@ public class YuqueTocService {
         map.put("url", menuItem.getSlug()); // 不是原始路径，是相对路径
         map.put("type", menuItem.getType().name());
         String res = client.put(url, null, JSON.toJSONString(map));
-        return queryUuid(res, menuItem);
+        return queryUuid(res, menuItem, parentMenuItem);
     }
 
     /**
@@ -202,12 +202,13 @@ public class YuqueTocService {
     /**
      * 由于每次请求的返回结果是整个 toc，所以从返回结果中遍历查找中上一次操作的 uuid
      *
-     * @param tocJson
-     * @param item    要匹配的目录节点，需要title+url+type都匹配
+     * @param tocJson        全部对象
+     * @param item           要匹配的目录节点，需要title+url+type都匹配
+     * @param parentMenuItem 要匹配的目录节点的父节点，需要uuid都匹配
      * @return 对应的 uuid
      * @throws RuntimeException 找不到结果抛异常
      */
-    protected String queryUuid(String tocJson, MenuItem item) {
+    protected String queryUuid(String tocJson, MenuItem item, MenuItem parentMenuItem) {
         Assert.notNull(item, "item is null!");
 
         JSONObject obj = (JSONObject) JSONObject.parse(tocJson);
@@ -217,7 +218,11 @@ public class YuqueTocService {
                 JSONObject mi = (JSONObject) datum;
                 if (trimToEmpty(mi.getString("title")).equals(trimToEmpty(item.getTitle()))
                         && trimToEmpty(mi.getString("type")).equals(trimToEmpty(item.getType().name()))
-                        && trimToEmpty(mi.getString("url")).equals(trimToEmpty(item.getSlug()))) {
+                        && trimToEmpty(mi.getString("url")).equals(trimToEmpty(item.getSlug()))
+                        && ( // 额外判断一下父 uuid 是否相同，防止不同目录同名的行为
+                        parentMenuItem == null || StringUtils.isBlank(parentMenuItem.getUuid())
+                                || trimToEmpty(mi.getString("parent_uuid")).equals(trimToEmpty(parentMenuItem.getUuid())
+                        ))) {
                     return mi.getString("uuid");
                 }
             }
