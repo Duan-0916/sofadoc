@@ -31,7 +31,7 @@
             </RollingFile>
 
             <RollingFile name="APP-UTILS-APPENDER" fileName="${ctx:logging.path}/${ctx:spring.application.name}/app-utils.log"
-                         filePattern="${ctx:logging.path}/${ctx:spring.application.name}/app-default.log.%d{yyyy-MM-dd}"
+                         filePattern="${ctx:logging.path}/${ctx:spring.application.name}/app-utils.log.%d{yyyy-MM-dd}"
                          append="true">
                 <PatternLayout
                         pattern="%d [%X{traceId} %X{rpcId} - %X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - %m%n%throwable"
