@@ -112,7 +112,7 @@ public class TOCChecker {
             errors.add("[" + title + "](" + url + ") URL 存在同访问路径，请检查是否存在多个同名文件");
             return;
         } else if (!isLegalSlug(slug)) {
-            errors.add("[" + title + "](" + url + ") URL 生成的 slug [" + slug + "] 不合法（语雀访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点），请检查");
+            errors.add("[" + title + "](" + url + ") URL 生成的 slug [" + slug + "] 不合法（语雀访问路径至少 2 个字符，最长 190 字符，只能输入小写字母、数字、横线、下划线和点），请检查");
             return;
         } else {
             // 检查文件是否存在
@@ -126,10 +126,14 @@ public class TOCChecker {
         // TODO: 检查其它文件内容
     }
 
-    private static final String SLUG_REGEX = "^[a-z0-9\\._-]{2,36}$";
+    /**
+     * 访问路径为 2～190 个字符，只能输入小写字母、数字、横线、下划线和点
+     * // 202301 语雀从 36 扩展到 190 字符
+     */
+    private static final String SLUG_REGEX = "^[a-z0-9\\._-]{2,190}$";
 
     /**
-     * 访问路径至少 2 个字符，最长 36 字符，只能输入小写字母、数字、横线、下划线和点
+     * 访问路径至少 2 个字符，最长 190 字符，只能输入小写字母、数字、横线、下划线和点
      *
      * @param slug 访问路径
      * @return 是否合法

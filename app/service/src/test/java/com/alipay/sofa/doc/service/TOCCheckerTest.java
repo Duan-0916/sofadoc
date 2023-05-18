@@ -60,7 +60,7 @@ public class TOCCheckerTest {
         Assert.assertFalse(checker.isLegalSlug("1231/"));
         Assert.assertFalse(checker.isLegalSlug("AAA"));
         Assert.assertFalse(checker.isLegalSlug("..112"));
-        Assert.assertFalse(checker.isLegalSlug("1234567890123456789012345678901234567"));
+        Assert.assertFalse(checker.isLegalSlug("a2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901"));
 
         Assert.assertTrue(checker.isLegalSlug("ab"));
         Assert.assertTrue(checker.isLegalSlug("faq"));
@@ -68,7 +68,7 @@ public class TOCCheckerTest {
         Assert.assertTrue(checker.isLegalSlug("aabb_222"));
         Assert.assertTrue(checker.isLegalSlug("aabb.222"));
         Assert.assertTrue(checker.isLegalSlug("abss-123_12313.213asdb"));
-        Assert.assertTrue(checker.isLegalSlug("123456789012345678901234567890123456"));
+        Assert.assertTrue(checker.isLegalSlug("a234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"));
 
     }
 
