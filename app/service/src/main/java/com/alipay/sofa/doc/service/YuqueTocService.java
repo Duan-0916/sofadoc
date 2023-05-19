@@ -100,6 +100,9 @@ public class YuqueTocService {
         String json = client.get(url);
         JSONObject res = JSONObject.parseObject(json);
         JSONArray data = res.getJSONArray("data");
+        if (data == null) {
+            return;
+        }
         for (Object datum : data) {
             JSONObject menuItem = (JSONObject) datum;
             if (StringUtils.isBlank(nodeUuid)) { // 代表清空根目录
