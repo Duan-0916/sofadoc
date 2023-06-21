@@ -11,7 +11,8 @@ import com.alipay.aclinkelib.common.service.facade.model.v2.AntCIComponentStatus
 import com.alipay.aclinkelib.common.util.JsonUtil;
 import com.alipay.aclinkelib.common.util.ThreadContextUtil;
 import com.alipay.common.tracer.concurrent.TracerRunnable;
-import com.alipay.sofa.boot.util.NamedThreadFactory;
+
+import com.alipay.sofa.common.thread.NamedThreadFactory;
 import com.alipay.sofa.doc.model.SyncRequest;
 import com.alipay.sofa.doc.model.SyncResult;
 import com.alipay.sofa.doc.service.GitService;
