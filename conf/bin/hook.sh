@@ -18,7 +18,7 @@ function before_appkill_hook {
     dir_name=`dirname $0`
     echo "hook.sh dirname=${dir_name}"
     echo 'In before_appkill_hook sofa boot before_appkill_hook executed'
-    SOFABOOT_JAR_LAUNCHER="com.alipay.sofa.loader.spring.IndexJarLauncher"
+    #SOFABOOT_JAR_LAUNCHER="com.alipay.sofa.loader.spring.IndexJarLauncher"
 }
 
 function after_appkill_hook {
