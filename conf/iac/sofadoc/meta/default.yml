@@ -1,5 +1,6 @@
 version: 1.0
 configs:
+  # 配置格式请参考：https://yuque.antfin.com/vlu1sb/yl4rpk/tnrrwy
   # 基础配置
   #   alios(可选，默认6u2) 基础镜像版本 6u2/7u2
   #   lang(可选，默认zh_CN.GB18030) 服务器编码 zh_CN.UTF-8/zh_CN.GB18030
@@ -19,6 +20,6 @@ configs:
     - name: maven
       version: 3.5.4
     - name: jdk
-      version: 8_5_9-b245-dep
+      version: 17.0.6+8
     - name: t-alipay-tengine
       version: 1.5.3
