@@ -12,3 +12,9 @@ Alipay.com Inc. Copyright (c) 2004-2021 All Rights Reserved.
 - 修复时间：20221114
 - 修复负责人：蚂蚁中间件团队
 
+## Alipay Distro Auto Upgrade
+- 修复描述：null
+- 修复文档：null
+- 修复时间：20230621
+- 修复负责人：null
+
