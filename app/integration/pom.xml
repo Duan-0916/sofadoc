@@ -21,6 +21,12 @@
         <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>rpc-alipay-sofa-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.alipay.sofa</groupId>
