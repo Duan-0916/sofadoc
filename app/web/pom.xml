@@ -13,6 +13,18 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.alipay.sofa</groupId>
+			<artifactId>tracer-alipay-sofa-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.alipay.security</groupId>
 			<artifactId>alipay-security-core</artifactId>
 		</dependency>
@@ -23,6 +35,12 @@
 		<dependency>
 			<groupId>com.alipay.sofa</groupId>
 			<artifactId>web-alipay-sofa-boot-starter</artifactId>
+			<exclusions>
+    			<exclusion>
+        			<groupId>com.alipay.sofa</groupId>
+        			<artifactId>guardian-sofa-boot-starter</artifactId>
+    			</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

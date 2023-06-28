@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.alipay.sofa</groupId>
         <artifactId>sofaboot-alipay-dependencies</artifactId>
-        <version>3.15.3</version>
+        <version>4.0.0</version>
     </parent>
     <groupId>com.alipay.sofa</groupId>
     <artifactId>sofa-doc-parent</artifactId>
@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <name>sofa-doc</name>
     <description>Demo project for SOFA Boot</description>
-
     <modules>
         <module>app/bootstrap</module>
         <module>app/web</module>
@@ -25,15 +24,29 @@
         <module>app/integration</module>
     </modules>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <facade.version>0.0.1-SNAPSHOT</facade.version>
         <jgit.version>5.1.16.202106041830-r</jgit.version>
         <jsch.version>0.1.54</jsch.version>
         <aclinkelib.version>1.2.5.20210507</aclinkelib.version>
     </properties>
-
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>net.sf.json-lib</groupId>
+                <artifactId>json-lib</artifactId>
+                <version>2.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alipay.sofa</groupId>
+                <artifactId>sofaboot-legacy</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.22</version>
+            </dependency>
             <dependency>
                 <groupId>com.alipay.sofa</groupId>
                 <artifactId>sofa-doc-bootstrap</artifactId>
@@ -74,7 +87,6 @@
                 <artifactId>sofa-doc-intergration</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
-
             <dependency>
                 <groupId>org.eclipse.jgit</groupId>
                 <artifactId>org.eclipse.jgit</artifactId>
@@ -100,25 +112,22 @@
                 <artifactId>commons-fileupload</artifactId>
                 <version>1.4</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>com.alipay.sofa</groupId>
-            <artifactId>healthcheck-sofa-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>actuator-alipay-sofa-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>runtime-alipay-sofa-boot-starter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>test-alipay-sofa-boot-starter</artifactId>
@@ -135,7 +144,6 @@
             </exclusions>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -211,7 +219,6 @@
             </plugin>
         </plugins>
     </build>
-
     <profiles>
         <!--蚂蚁主站开发环境maven配置-->
         <profile>
@@ -275,5 +282,4 @@
             </pluginRepositories>
         </profile>
     </profiles>
-
 </project>
