@@ -14,7 +14,7 @@ configs:
   #是否启动修改pom.xml，值：true/false
   #true 启用，根据JDK版本自动修改pom.xml, 修改内容有：maven插件版本，surefire的forkMode等相关配置，自动添加jacoco相关配置
   #  autoPom: true
-  autoPom: true
+  autoPom: false
 
   #覆盖率统计排除
   #指定的文件将排除Maven执行中的覆盖率统计。如果需要强制排除覆盖率统计，自动修改pom.xml选择“启用”
