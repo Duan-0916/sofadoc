@@ -78,8 +78,8 @@ public class DRMSyncService {
                         newDataId.getResourceDomain(),
                         newDataId.getResourceId(), newDataId.getAttributeName(),
                         newDataId.getResourceVersion(), logicZones);
+                continue;
             }
-            logicZones.add(entry.getKey());
 
             if (watchMode) {
                 // 观察者模式，只打印日志
