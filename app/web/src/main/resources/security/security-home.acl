@@ -1,3 +1,4 @@
 /actuator/**>ALL_VISIBLE
 /v1/rest/**>ALL_VISIBLE
 /hello>LOGIN_VISIBLE
+/drm/*>ALL_VISIBLE

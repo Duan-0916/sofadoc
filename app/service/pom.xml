@@ -41,7 +41,10 @@
             <groupId>com.alipay.sofa</groupId>
             <artifactId>sofa-doc-intergration</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.alipay.opssla</groupId>
+            <artifactId>opssla-common-service-facade</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
