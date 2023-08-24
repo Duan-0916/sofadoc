@@ -6,6 +6,7 @@ import com.alipay.sofa.doc.service.GitService;
 import com.alipay.sofa.doc.service.SyncService;
 import com.alipay.sofa.doc.utils.FileUtils;
 import com.alipay.sofa.doc.utils.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 
 /**
@@ -51,7 +51,7 @@ public class UploadController {
             return new SyncResult(false,
                     "Zip file " + file.getOriginalFilename() + " is empty.");
         } else {
-            DefaultMultipartHttpServletRequest servletRequest = (DefaultMultipartHttpServletRequest) request;
+            MultipartHttpServletRequest servletRequest = (MultipartHttpServletRequest) request;
             LOGGER.info("Receive upload request, file: {}", file.getOriginalFilename());
 
             SyncRequest syncRequest = new SyncRequest();
