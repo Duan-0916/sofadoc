@@ -37,6 +37,7 @@ public class DRMSyncController {
     @ResponseBody
     public DRMSyncResult doRestSampleSync(@RequestParam String token,
                                           @RequestParam(defaultValue = "true") boolean watchMode,
+                                          @RequestParam(defaultValue = DRMSyncService.REPLACE_RESOURCE_DOMAIN) String syncMode,
                                           @RequestBody List<String> dataIDs) {
 
         LOGGER.info("Receive sync request, token:{}, body: {}", token, dataIDs);
@@ -52,7 +53,7 @@ public class DRMSyncController {
         List<String> failures = new ArrayList<>();
         for (String dataID : dataIDs) {
             try {
-                if (drmSyncService.sync(dataID, watchMode)) {
+                if (drmSyncService.sync(dataID, watchMode, syncMode)) {
                     successes.add(dataID);
                 } else {
                     failures.add(dataID);
