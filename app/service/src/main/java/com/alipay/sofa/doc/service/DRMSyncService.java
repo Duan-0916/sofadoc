@@ -22,15 +22,25 @@ public class DRMSyncService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DRMSyncService.class);
 
+    /**
+     * 替换 RESOURCE_DOMAIN 里的应用名
+     */
+    public static final String REPLACE_RESOURCE_DOMAIN = "1";
+    /**
+     * 替换 RESOURCE_ID 里的应用名
+     */
+    public static final String REPLACE_RESOURCE_ID = "2";
+
     @RpcConsumer(uniqueId = "${drm.manage.facade.uniqueId}")
     DrmManageFacade drmManageFacade;
 
     /**
      * @param dataIDStr 要同步的key
      * @param watchMode 观察者模式
+     * @param syncmode 同步模式 1是应用，2是还id
      * @return 同步成功与否
      */
-    public boolean sync(String dataIDStr, boolean watchMode) {
+    public boolean sync(String dataIDStr, boolean watchMode, String syncmode) {
         DRMDataID drmDataID = DRMDataID.parseFrom(dataIDStr);
         DrmQueryResult<Map<String, String>> result = drmManageFacade.queryValueByAllZone(drmDataID.getResourceId(),
                 drmDataID.getResourceDomain(),
@@ -59,11 +69,10 @@ public class DRMSyncService {
         DRMDataID newDataId = new DRMDataID()
                 .setAttributeName(drmDataID.getAttributeName())
                 .setResourceVersion(drmDataID.getResourceVersion());
-        if (drmDataID.getResourceDomain().startsWith("Alipay")) {
+        if (REPLACE_RESOURCE_DOMAIN.equals(syncmode)) {
             newDataId.setResourceDomain(drmDataID.getResourceDomain() + "c");// 3.0 特殊处理
             newDataId.setResourceId(drmDataID.getResourceId());
-        }
-        if (drmDataID.getResourceDomain().startsWith("sofa.config")) {
+        } else if(REPLACE_RESOURCE_ID.equals(syncmode)) {
             newDataId.setResourceDomain(drmDataID.getResourceDomain()); // 3.0 特殊处理
             newDataId.setResourceId(drmDataID.getResourceId() + "c");
         }
