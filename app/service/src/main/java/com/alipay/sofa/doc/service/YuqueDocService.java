@@ -180,6 +180,8 @@ public class YuqueDocService {
             LOGGER.error("Failed to add doc: " + doc.getTitle() + ", response data is : " + json);
             if (json.contains(YuqueConstants.HTTP_API_CODE_OVERLOAD)) {
                 throw new RuntimeException("新增语雀文档失败，当前账号已经超过语雀 API 使用次数限制，请稍后再试");
+            } else if (json.contains("路径名冲突")) {
+                throw new RuntimeException("请检查知识库中是否存在同路径文档，比如回收站中，请清理后再试");
             } else {
                 throw new RuntimeException("新增语雀文档失败，请检查文档和知识库是否存在或者当前同步用户有知识库操作权限");
             }
@@ -217,6 +219,8 @@ public class YuqueDocService {
             LOGGER.error("Failed to update doc: " + doc.getTitle() + ", response data is : " + json);
             if (json.contains(YuqueConstants.HTTP_API_CODE_OVERLOAD)) {
                 throw new RuntimeException("更新语雀文档失败，当前账号已经超过语雀 API 使用次数限制，请稍后再试");
+            } else if (json.contains("路径名冲突")) {
+                throw new RuntimeException("请检查知识库中是否存在同路径文档，比如回收站中，请清理后再试");
             } else {
                 throw new RuntimeException("更新语雀文档失败，请检查文档和知识库是否存在或者当前同步用户有知识库操作权限");
             }
