@@ -11,7 +11,6 @@ import com.alipay.aclinkelib.common.service.facade.model.v2.AntCIComponentStatus
 import com.alipay.aclinkelib.common.util.JsonUtil;
 import com.alipay.aclinkelib.common.util.ThreadContextUtil;
 import com.alipay.common.tracer.concurrent.TracerRunnable;
-
 import com.alipay.sofa.common.thread.NamedThreadFactory;
 import com.alipay.sofa.doc.model.SyncRequest;
 import com.alipay.sofa.doc.model.SyncResult;
@@ -20,6 +19,7 @@ import com.alipay.sofa.doc.service.SyncService;
 import com.alipay.sofa.doc.utils.FileUtils;
 import com.alipay.sofa.doc.utils.NetUtils;
 import com.alipay.sofa.doc.utils.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -200,6 +199,7 @@ public class AciController {
             syncRequest.setSlugSuffix(inputs.get("slugSuffix"));
             syncRequest.setHeader(inputs.get("header"));
             syncRequest.setFooter(inputs.get("footer"));
+            syncRequest.setYuqueSite(inputs.get("yuqueSite"));
             syncRequest.setYuqueToken(inputs.get("yuqueToken"));
             syncRequest.setYuqueUser(inputs.get("yuqueUser"));
 
