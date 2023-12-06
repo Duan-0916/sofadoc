@@ -37,8 +37,11 @@ public class YuqueClient {
     private final String xAuthToken;
 
     public YuqueClient(String baseUrl, String xAuthToken) {
-        if (StringUtils.isEmpty(baseUrl) || StringUtils.isEmpty(xAuthToken)) {
-            throw new IllegalArgumentException("baseUrl and xAuthToken can not null");
+        if (StringUtils.isEmpty(baseUrl)) {
+            throw new IllegalArgumentException("baseUrl can not null");
+        }
+        if (StringUtils.isEmpty(xAuthToken)) {
+            throw new IllegalArgumentException("xAuthToken can not null");
         }
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
         this.xAuthToken = xAuthToken;

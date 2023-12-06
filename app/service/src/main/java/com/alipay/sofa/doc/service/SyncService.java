@@ -52,12 +52,12 @@ public class SyncService {
         SyncResult result;
         try {
             String yuqueNamespace = request.getYuqueNamespace();
-            Assert.notNull(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
+            Assert.hasLength(yuqueNamespace, "yuqueNamespace 不能为空，请在「.aci.yml」里配置要同步的语雀知识库");
 
             String gitRepo = request.getLocalRepoPath();
             String gitDocRoot = request.getGitDocRoot();
-            Assert.notNull(gitRepo, "gitRepo 不能为空");
-            Assert.notNull(gitDocRoot, "gitDocRoot 不能为空");
+            Assert.hasLength(gitRepo, "gitRepo 不能为空");
+            Assert.hasLength(gitDocRoot, "gitDocRoot 不能为空");
 
             // 先找是否有自定义 token，没有的话再找是否有自定义 user，否则走默认 user
             String yuqueToken = request.getYuqueToken();
@@ -68,7 +68,7 @@ public class SyncService {
                 }
                 yuqueToken = tokenService.getTokenByUser(yuqueUser);
             }
-            Assert.notNull(yuqueToken, "yuqueUser或yuqueToken未配置，请申请语雀团队 Token 并联系管理员进行配置");
+            Assert.hasLength(yuqueToken, "yuqueUser或yuqueToken未配置，请申请语雀团队 Token 并联系管理员进行配置");
 
             Context.SyncMode syncTocMode;
             String syncTocStr = request.getSyncMode();
