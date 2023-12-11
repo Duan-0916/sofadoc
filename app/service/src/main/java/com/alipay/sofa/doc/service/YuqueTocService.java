@@ -94,6 +94,7 @@ public class YuqueTocService {
      * @param namespace 命名空间
      * @param nodeUuid  目标节点的 uuid
      */
+
     protected void removeChildren(YuqueClient client, String namespace, String nodeUuid) {
         Assert.notNull(client, "client is null");
         String url = "/repos/" + namespace + "/toc";
