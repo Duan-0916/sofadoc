@@ -16,10 +16,10 @@
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alipay.mist</groupId>
-            <artifactId>mist-sdk-shaded</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.alipay.mist</groupId>-->
+<!--            <artifactId></artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>sofa-doc-dal</artifactId>

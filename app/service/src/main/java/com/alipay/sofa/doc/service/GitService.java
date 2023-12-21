@@ -77,8 +77,7 @@ public class GitService {
      */
     public String clone(String gitRepo, String branch, String commitId) throws Exception {
         String gitRepoName = getGitRepoName(gitRepo); // 不带 http和.git的地址，用于生成本地文件夹，例如：code.alipay.com/zhanggeng.zg/test-doc
-        String gitSshURL = getGitSshURL(gitRepo); // git 开头的地址，用于下载代码，例如：git@code.alipay.com:zhanggeng.zg/test-doc.git
-        return clone(gitSshURL, gitRepoName, branch, commitId);
+        return clone(gitRepo, gitRepoName, branch, commitId);
     }
 
     /**
@@ -150,10 +149,11 @@ public class GitService {
                 .setBranch(branch) //设置clone下来的分支
                 .setDirectory(localPath) //设置下载存放路径
                 //.setCredentialsProvider(credentialsProvider) // 设置权限验证，匿名下载不用设置
-                .setTransportConfigCallback(transport -> {
-                    SshTransport sshTransport = (SshTransport) transport;
-                    sshTransport.setSshSessionFactory(sshSessionFactory);
-                }).call();
+//                .setTransportConfigCallback(transport -> {
+//                    SshTransport sshTransport = (SshTransport) transport;
+//                    sshTransport.setSshSessionFactory(sshSessionFactory);
+//                })
+                .call();
     }
 
     /**

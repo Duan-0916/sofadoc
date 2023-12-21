@@ -1,7 +1,7 @@
 package com.alipay.sofa.doc.service;
 
-import com.alipay.mist.sdk.MistClient;
-import com.alipay.mist.utils.MistSDKException;
+//import com.alipay.mist.sdk.MistClient;
+//import com.alipay.mist.utils.MistSDKException;
 import com.alipay.sofa.doc.integration.drm.YuqueTokenDrm;
 import com.alipay.sofa.doc.utils.StringUtils;
 import org.slf4j.Logger;
@@ -18,8 +18,8 @@ public class TokenService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
 
-    @Autowired(required = false)
-    MistClient mistClient;
+//    @Autowired(required = false)
+//    MistClient mistClient;
 
     @Autowired(required = false)
     private YuqueTokenDrm yuqueTokenDrm;
@@ -44,13 +44,13 @@ public class TokenService {
                 }
             }
             // 再从 mist 里取
-            if (mistClient != null) {
-                try {
-                    return mistClient.getSecret("other_manual_sofadoc_" + yuqueUser);
-                } catch (MistSDKException e) {
-                    LOGGER.error("Query token of " + yuqueUser + " from mist error!", e);
-                }
-            }
+//            if (mistClient != null) {
+//                try {
+//                    return mistClient.getSecret("other_manual_sofadoc_" + yuqueUser);
+//                } catch (MistSDKException e) {
+//                    LOGGER.error("Query token of " + yuqueUser + " from mist error!", e);
+//                }
+//            }
         }
         return defaultYuqueToken;
     }

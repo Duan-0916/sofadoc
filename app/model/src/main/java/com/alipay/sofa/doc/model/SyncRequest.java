@@ -66,6 +66,10 @@ public class SyncRequest {
      */
     String gitHttpURL;
 
+    String gitCommitId;
+
+    String gitRepo;
+
     /**
      * Gets get file path.
      *
@@ -284,6 +288,22 @@ public class SyncRequest {
 
     public String getSlugSuffix() {
         return slugSuffix;
+    }
+
+    public String getGitCommitId() {
+        return gitCommitId;
+    }
+
+    public void setGitCommitId(String gitCommitId) {
+        this.gitCommitId = gitCommitId;
+    }
+
+    public String getGitRepo() {
+        return gitRepo;
+    }
+
+    public void setGitRepo(String gitRepo) {
+        this.gitRepo = gitRepo;
     }
 
     public SyncRequest setSlugSuffix(String slugSuffix) {

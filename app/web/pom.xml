@@ -56,10 +56,10 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.alipay.sofa</groupId>
-			<artifactId>buservice-alipay-sofa-boot-starter</artifactId>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.alipay.sofa</groupId>-->
+<!--			<artifactId>buservice-alipay-sofa-boot-starter</artifactId>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>commons-fileupload</groupId>

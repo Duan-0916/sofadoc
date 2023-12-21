@@ -1,6 +1,7 @@
 package com.alipay.sofa.doc.web;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.aclinkelib.common.rest.HttpResult;
 import com.alipay.aclinkelib.common.rest.RestClient;
 import com.alipay.aclinkelib.common.rest.RetryRestClient;
@@ -78,10 +79,89 @@ public class AciController {
     @Value("${sofa.doc.git.cacheEnable}")
     boolean cacheEnable = true;
 
+
+    @Value("${yuqueNamespace}")
+    String yuqueNamespace;
+
+    @Value("${yuqueSite}")
+    String yuqueSite;
+
+    @Value("${yuqueToken}")
+    String yuqueToken;
+
+    @Value("${gitDocToc}")
+    String gitDocToc;
+
+    @Value("${isGitHub}")
+    String isGitHub;
+
+
+    /**
+     * {
+     * "ref": "refs/heads/main",
+     * "before": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
+     * "after": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
+     * "repository": {
+     * "name": "my-repo",
+     * "full_name": "my-username/my-repo",
+     * "html_url": "https://github.com/my-username/my-repo"
+     * },
+     * "pusher": {
+     * "name": "John Doe"
+     * },
+     * "commits": [
+     * {
+     * "id": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
+     * "message": "Add new feature",
+     * "timestamp": "2021-09-01T10:30:00Z",
+     * "author": {
+     * "name": "John Doe",
+     * "email": "johndoe@example.com"
+     * }
+     * }
+     * ]
+     * }
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * {
+     * "inputs": {
+     * "yuqueNamespace": "eg6z1a/qpbul9",
+     * "yuqueSite": "https://mosn-layotto.yuque.com/",
+     * "yuqueToken":"TOdAggX2qQA20byXdw1qmfiJ2INwgATyf0uCUUM9",
+     * "gitRepo": "https://github.com/Duan-0916/alipay-test",
+     * "gitDocRoot": "/",
+     * "gitDocToc": "SUMMARY.md",
+     * "gitCommitId": "a585f6dbda2f6b49af7c76d0900d90080c41e71c",
+     * "gitBranch": "main",
+     * "isGitHub" : "yes"
+     * <p>
+     * }
+     * }
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "v1/rest/sync", method = RequestMethod.POST)
     @ResponseBody
-    public APIStringResult doRestSampleSync(HttpServletRequest request,
-                                            @RequestBody AntCIComponentRestRequest componentRequest) {
+//    public SyncResult doRestSampleSync(HttpServletRequest request,@RequestBody AntCIComponentRestRequest componentRequest) {
+    public SyncResult doRestSampleSync(HttpServletRequest request, @RequestBody String payload, @RequestBody AntCIComponentRestRequest componentRequest) {
+
+
+        JSONObject jsonObject = JSONObject.parseObject(payload);
+        AntCIComponentRestRequest restRequest = new AntCIComponentRestRequest();
+        Map<String, String> map = new HashMap<>();
+        map.put("html_url", jsonObject.getJSONObject("repository").getString("html_url"));
+        map.put("id", jsonObject.getJSONArray("commits").getJSONObject(0).getString("id"));
+        restRequest.setInputs(map);
+
+
+        ///--------------------------------------------------
+
         ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
         String body = new String(requestWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
         StringBuilder heads = new StringBuilder();
@@ -89,47 +169,38 @@ public class AciController {
         while (headNames.hasMoreElements()) {
             heads.append(headNames.nextElement()).append(",");
         }
-        LOGGER.info("Receive aci request, heads: {} \n body: {}", heads.substring(0, heads.length() - 1), body);
 
-        // 这个只是开启一个线程,可以直接new Thread() 的方式去整。
-        EXECUTOR.execute(new TracerRunnable() {
-            @Override
-            public void doRun() {
-                try {
-                    RUNNING_TASK_COUNT.incrementAndGet();
-                    ThreadContextUtil.setTask(componentRequest.getExecutionTaskId());
-                    LOGGER.info("start sync send request");
+//        String yuqueNamespace = restRequest.getInputs().get("yuqueNamespace");
+//        String yuqueNamespace = restRequest.getInputs().get("yuqueNamespace");
+//        String yuqueSite = restRequest.getInputs().get("yuqueSite");
 
-                    SyncResult result = doSync(componentRequest);
-                    // 重新组装返回数据信息
-                    AntCIComponentRestResponse restResponseV2 = new AntCIComponentRestResponse();
-                    restResponseV2.setExecutionTaskId(componentRequest.getExecutionTaskId());
-                    restResponseV2.setStatus(result.isSuccess() ? AntCIComponentStatus.SUCCESS : AntCIComponentStatus.FAILED);
-                    Map<String, String> submitOutputs = new HashMap<>();
-                    submitOutputs.put("resultMsg", result.getMessage());
-                    submitOutputs.put("debugReq", "<button onclick=\"document.getElementById('g2ydebug').style.display='block'\">显示 debug 信息</button>\n" +
-                            "<span id=\"g2ydebug\" style=\"display:none\">" +
-                            "- server:" + LOCAL_IP + "<br/>" +
-                            "- heads: " + heads + "<br/>" +
-                            "- body: " + body + "</span>");
-                    restResponseV2.setOutputs(submitOutputs);
-                    restResponseV2.setArtifacts(new HashMap<>());
-                    String postData = JsonUtil.toJson(restResponseV2);
-                    final StringEntity postEntity = RestClient.getStringEntity(postData);
-                    final String submitResultUrl = componentRequest.getSubmitResultUrl();
-                    LOGGER.info("start sync send request: {}, {}", JSON.toJSONString(submitResultUrl), JSON.toJSONString(postData));
-                    /* 回调REST接口 */
-                    HttpResult httpResult = new RetryRestClient().post(submitResultUrl, postEntity,
-                            componentRequest.getSubmitResultHeaders(), true);
-                    LOGGER.info("start sync send status: {}", httpResult.getStatus());
-                } catch (Exception e) {
-                    LOGGER.error("send post msg fail:" + e.getMessage(), e);
-                } finally {
-                    RUNNING_TASK_COUNT.incrementAndGet();
-                }
-            }
-        });
-        return new APIStringResult();
+
+        Map<String, String> inputs = restRequest.getInputs();
+        String html_url = inputs.get("html_url");
+        String id = inputs.get("id");
+
+
+        // 创建一个 SyncRequest 对象
+        SyncRequest syncRequest = new SyncRequest();
+        syncRequest.setYuqueNamespace(yuqueNamespace);
+        syncRequest.setYuqueSite(yuqueSite);
+        syncRequest.setYuqueSite(yuqueSite);
+        syncRequest.setYuqueToken(yuqueToken);
+        syncRequest.setGitDocToc(gitDocToc);
+        syncRequest.setGitCommitId(id);
+        syncRequest.setGitRepo(html_url);
+
+        // 调用 doSync 方法进行同步操作
+//        SyncResult result = syncService.doSync(syncRequest);
+        SyncResult result = doSync(componentRequest);
+
+        // 根据同步结果进行相应的处理
+        if (!cacheEnable && syncRequest.getLocalRepoPath() != null) {
+            // 清理旧的目录
+            FileUtils.cleanDirectory(new File(syncRequest.getLocalRepoPath()));
+        }
+
+        return result;
     }
 
     /**
