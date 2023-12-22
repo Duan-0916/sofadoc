@@ -1,6 +1,7 @@
 package com.alipay.sofa.doc.web;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.aclinkelib.common.rest.HttpResult;
 import com.alipay.aclinkelib.common.rest.RestClient;
 import com.alipay.aclinkelib.common.rest.RetryRestClient;
@@ -78,45 +79,50 @@ public class AciController {
     @Value("${sofa.doc.git.cacheEnable}")
     boolean cacheEnable = true;
 
+
+    @Value("${yuqueNamespace}")
+    String yuqueNamespace;
+
+    @Value("${yuqueSite}")
+    String yuqueSite;
+
+    @Value("${yuqueToken}")
+    String yuqueToken;
+
+    @Value("${gitDocToc}")
+    String gitDocToc;
+
+    @Value("${gitDocRoot}")
+    String gitDocRoot;
+
+    @Value("${isGitHub}")
+    String isGitHub;
+
+
     /**
-     *
      * {
-     *   "ref": "refs/heads/main",
-     *   "before": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
-     *   "after": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
-     *   "repository": {
-     *     "name": "my-repo",
-     *     "full_name": "my-username/my-repo",
-     *     "html_url": "https://github.com/my-username/my-repo"
-     *   },
-     *   "pusher": {
-     *     "name": "John Doe"
-     *   },
-     *   "commits": [
-     *     {
-     *       "id": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
-     *       "message": "Add new feature",
-     *       "timestamp": "2021-09-01T10:30:00Z",
-     *       "author": {
-     *         "name": "John Doe",
-     *         "email": "johndoe@example.com"
-     *       }
-     *     }
-     *   ]
-     * }
-     *
-     *
-     *
-     *
      * @param request
      * @return
      */
     @RequestMapping(value = "v1/rest/sync", method = RequestMethod.POST)
     @ResponseBody
-    public SyncResult doRestSampleSync(HttpServletRequest request,@RequestBody AntCIComponentRestRequest componentRequest) {
-//    public SyncResult doRestSampleSync(HttpServletRequest request,@RequestBody String payload) {
+//    public SyncResult doRestSampleSync(HttpServletRequest request,@RequestBody AntCIComponentRestRequest componentRequest) {
+    public SyncResult doRestSampleSync(HttpServletRequest request, @RequestBody JSONObject payload) {
+        LOGGER.info("payload:"+payload);
+        AntCIComponentRestRequest restRequest = new AntCIComponentRestRequest();
+        Map<String, String> map = new HashMap<>();
+        map.put("gitRepo", payload.getJSONObject("repository").getString("url"));
+        map.put("gitCommitId", payload.getJSONArray("commits").getJSONObject(0).getString("id"));
+        map.put("gitBranch", payload.getJSONObject("repository").getString("master_branch"));
+        map.put("yuqueNamespace",yuqueNamespace);
+        map.put("yuqueSite",yuqueSite);
+        map.put("yuqueToken",yuqueToken);
+        map.put("gitDocToc",gitDocToc);
+        map.put("gitDocRoot",gitDocRoot);
+        restRequest.setInputs(map);
 
 
+        ///--------------------------------------------------
 
         ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
         String body = new String(requestWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
@@ -126,10 +132,8 @@ public class AciController {
             heads.append(headNames.nextElement()).append(",");
         }
 
-        String yuqueNamespace = componentRequest.getInputs().get("yuqueNamespace");
-        String yuqueSite = componentRequest.getInputs().get("yuqueSite");
-
-
+        String yuqueNamespace = restRequest.getInputs().get("yuqueNamespace");
+        String yuqueSite = restRequest.getInputs().get("yuqueSite");
         // 创建一个 SyncRequest 对象
         SyncRequest syncRequest = new SyncRequest();
         syncRequest.setYuqueNamespace(yuqueNamespace);
@@ -137,7 +141,10 @@ public class AciController {
 
         // 调用 doSync 方法进行同步操作
 //        SyncResult result = syncService.doSync(syncRequest);
-        SyncResult result = doSync(componentRequest);
+//        if(!(branch.equals("master") || branch.equals("main"))){
+//             return null;
+//        }
+        SyncResult result = doSync(restRequest);
 
         // 根据同步结果进行相应的处理
         if (!cacheEnable && syncRequest.getLocalRepoPath() != null) {
@@ -226,3 +233,4 @@ public class AciController {
         }
     }
 }
+
