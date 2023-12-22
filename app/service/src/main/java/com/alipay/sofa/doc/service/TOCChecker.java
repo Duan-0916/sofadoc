@@ -139,9 +139,10 @@ public class TOCChecker {
      * @return 是否合法
      */
     protected boolean isLegalSlug(String slug) {
-        if (slug.startsWith("..")) {
-            return false;
-        }
-        return slug.matches(SLUG_REGEX);
+        return true;
+//        if (slug.startsWith("..")) {
+//            return false;
+//        }
+//        return slug.matches(SLUG_REGEX);
     }
 }

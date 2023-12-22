@@ -65,33 +65,34 @@ public class YuqueSlugGenerator {
      * @return 文件关键字
      */
     private String url2SlugByDirsAndFileName(String url) {
-        String[] arr = url.toLowerCase().split("/");
-        String slug = "";
-        for (int i = arr.length - 1; i >= 0; i--) {
-            StringBuilder sb = new StringBuilder(arr[i].length());
-            for (int j = 0; j < arr[i].length(); j++) {
-                char c = arr[i].charAt(j);
-                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.') {
-                    sb.append(c);
-                }
-            }
-            if (sb.length() == 0) {
-                continue;
-            }
-            if (slug.isEmpty()) {
-                slug = sb.toString();
-                if (slug.endsWith(".md")) {
-                    slug = slug.substring(0, slug.length() - 3);
-                }
-            } else if (sb.length() + slug.length() >= 36) {
-                return slug;
-            } else {
-                slug = sb + "-" + slug;
-            }
-        }
-        if (slug.length() > 36) {
-            slug = slug.substring(0, 36);
-        }
-        return slug;
+        return url.replaceAll("/","_").replace(".md","").toLowerCase();
+//        String[] arr = url.toLowerCase().split("/");
+//        String slug = "";
+//        for (int i = arr.length - 1; i >= 0; i--) {
+//            StringBuilder sb = new StringBuilder(arr[i].length());
+//            for (int j = 0; j < arr[i].length(); j++) {
+//                char c = arr[i].charAt(j);
+//                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.') {
+//                    sb.append(c);
+//                }
+//            }
+//            if (sb.length() == 0) {
+//                continue;
+//            }
+//            if (slug.isEmpty()) {
+//                slug = sb.toString();
+//                if (slug.endsWith(".md")) {
+//                    slug = slug.substring(0, slug.length() - 3);
+//                }
+//            } else if (sb.length() + slug.length() >= 36) {
+//                return slug;
+//            } else {
+//                slug = sb + "-" + slug;
+//            }
+//        }
+//        if (slug.length() > 36) {
+//            slug = slug.substring(0, 36);
+//        }
+//        return slug;
     }
 }
