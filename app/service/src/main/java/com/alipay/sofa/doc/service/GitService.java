@@ -125,7 +125,7 @@ public class GitService {
                 LOGGER.info("git clone success! {}", localRepoPath.getAbsolutePath());
             }
             // git checkout
-            checkOutCommitId(git, commitId, "c_" + commitId);
+            checkOutCommitId(git, commitId, "c_" + System.currentTimeMillis());
         } finally {
             if (git != null) {
                 git.close();
@@ -175,10 +175,11 @@ public class GitService {
      */
     private void checkOutCommitId(Git git, String commitId, String newBranch) throws Exception {
         try {
-            git.checkout().setCreateBranch(true).setName(newBranch).setStartPoint(commitId).call();
+
+            git.checkout().setCreateBranch(true).setName(newBranch).call();
         } catch (RefAlreadyExistsException e) {
             // 如果分支已存在，直接切
-            git.checkout().setName(newBranch).setStartPoint(commitId).call();
+            git.checkout().setName(newBranch).call();
         }
     }
 

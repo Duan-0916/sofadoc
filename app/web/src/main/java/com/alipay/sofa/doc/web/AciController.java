@@ -1,7 +1,6 @@
 package com.alipay.sofa.doc.web;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alipay.aclinkelib.common.rest.HttpResult;
 import com.alipay.aclinkelib.common.rest.RestClient;
 import com.alipay.aclinkelib.common.rest.RetryRestClient;
@@ -79,88 +78,45 @@ public class AciController {
     @Value("${sofa.doc.git.cacheEnable}")
     boolean cacheEnable = true;
 
-
-    @Value("${yuqueNamespace}")
-    String yuqueNamespace;
-
-    @Value("${yuqueSite}")
-    String yuqueSite;
-
-    @Value("${yuqueToken}")
-    String yuqueToken;
-
-    @Value("${gitDocToc}")
-    String gitDocToc;
-
-    @Value("${isGitHub}")
-    String isGitHub;
-
-
     /**
+     *
      * {
-     * "ref": "refs/heads/main",
-     * "before": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
-     * "after": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
-     * "repository": {
-     * "name": "my-repo",
-     * "full_name": "my-username/my-repo",
-     * "html_url": "https://github.com/my-username/my-repo"
-     * },
-     * "pusher": {
-     * "name": "John Doe"
-     * },
-     * "commits": [
-     * {
-     * "id": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
-     * "message": "Add new feature",
-     * "timestamp": "2021-09-01T10:30:00Z",
-     * "author": {
-     * "name": "John Doe",
-     * "email": "johndoe@example.com"
+     *   "ref": "refs/heads/main",
+     *   "before": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
+     *   "after": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
+     *   "repository": {
+     *     "name": "my-repo",
+     *     "full_name": "my-username/my-repo",
+     *     "html_url": "https://github.com/my-username/my-repo"
+     *   },
+     *   "pusher": {
+     *     "name": "John Doe"
+     *   },
+     *   "commits": [
+     *     {
+     *       "id": "b7efb0c59b54948f4e6b2121e215f9f6d0c2b3f3",
+     *       "message": "Add new feature",
+     *       "timestamp": "2021-09-01T10:30:00Z",
+     *       "author": {
+     *         "name": "John Doe",
+     *         "email": "johndoe@example.com"
+     *       }
+     *     }
+     *   ]
      * }
-     * }
-     * ]
-     * }
-     * <p>
-     * <p>
-     * <p>
-     * <p>
-     * <p>
-     * <p>
-     * <p>
-     * {
-     * "inputs": {
-     * "yuqueNamespace": "eg6z1a/qpbul9",
-     * "yuqueSite": "https://mosn-layotto.yuque.com/",
-     * "yuqueToken":"TOdAggX2qQA20byXdw1qmfiJ2INwgATyf0uCUUM9",
-     * "gitRepo": "https://github.com/Duan-0916/alipay-test",
-     * "gitDocRoot": "/",
-     * "gitDocToc": "SUMMARY.md",
-     * "gitCommitId": "a585f6dbda2f6b49af7c76d0900d90080c41e71c",
-     * "gitBranch": "main",
-     * "isGitHub" : "yes"
-     * <p>
-     * }
-     * }
+     *
+     *
+     *
      *
      * @param request
      * @return
      */
     @RequestMapping(value = "v1/rest/sync", method = RequestMethod.POST)
     @ResponseBody
-//    public SyncResult doRestSampleSync(HttpServletRequest request,@RequestBody AntCIComponentRestRequest componentRequest) {
-    public SyncResult doRestSampleSync(HttpServletRequest request, @RequestBody String payload, @RequestBody AntCIComponentRestRequest componentRequest) {
+    public SyncResult doRestSampleSync(HttpServletRequest request,@RequestBody AntCIComponentRestRequest componentRequest) {
+//    public SyncResult doRestSampleSync(HttpServletRequest request,@RequestBody String payload) {
 
 
-        JSONObject jsonObject = JSONObject.parseObject(payload);
-        AntCIComponentRestRequest restRequest = new AntCIComponentRestRequest();
-        Map<String, String> map = new HashMap<>();
-        map.put("html_url", jsonObject.getJSONObject("repository").getString("html_url"));
-        map.put("id", jsonObject.getJSONArray("commits").getJSONObject(0).getString("id"));
-        restRequest.setInputs(map);
-
-
-        ///--------------------------------------------------
 
         ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
         String body = new String(requestWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
@@ -170,25 +126,14 @@ public class AciController {
             heads.append(headNames.nextElement()).append(",");
         }
 
-//        String yuqueNamespace = restRequest.getInputs().get("yuqueNamespace");
-//        String yuqueNamespace = restRequest.getInputs().get("yuqueNamespace");
-//        String yuqueSite = restRequest.getInputs().get("yuqueSite");
-
-
-        Map<String, String> inputs = restRequest.getInputs();
-        String html_url = inputs.get("html_url");
-        String id = inputs.get("id");
+        String yuqueNamespace = componentRequest.getInputs().get("yuqueNamespace");
+        String yuqueSite = componentRequest.getInputs().get("yuqueSite");
 
 
         // 创建一个 SyncRequest 对象
         SyncRequest syncRequest = new SyncRequest();
         syncRequest.setYuqueNamespace(yuqueNamespace);
         syncRequest.setYuqueSite(yuqueSite);
-        syncRequest.setYuqueSite(yuqueSite);
-        syncRequest.setYuqueToken(yuqueToken);
-        syncRequest.setGitDocToc(gitDocToc);
-        syncRequest.setGitCommitId(id);
-        syncRequest.setGitRepo(html_url);
 
         // 调用 doSync 方法进行同步操作
 //        SyncResult result = syncService.doSync(syncRequest);
